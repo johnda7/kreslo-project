@@ -156,6 +156,20 @@
     </div></div>
   </div>
 
+  <!-- 3 СКАНА-КРЕСЛА ДРУГ ПОД ДРУГОМ (для сверки формы) -->
+  <div class="card" style="border:2px solid #7a5cc6">
+    <h2 style="color:#7a5cc6">3 скана-кресла в 3D друг под другом — для сверки формы</h2>
+    <p style="color:#555;font-size:14px;margin:4px 0 10px">Три разных Tripo-скана кресла UFO поставлены <b>стопкой</b>, чтобы сверять форму сразу по всем. Все откалиброваны к габариту Ø133. Каждое медленно вращается — <b>тяни мышкой, чтобы повернуть, колесо — зум</b>. Взяты чистые одиночные сканы (без сцены-мусора): фиолетовое, красное, чёрное.</p>
+    <div id="stack3d" style="display:flex;flex-direction:column;gap:12px">
+      <div><canvas id="sc_a" class="flat" style="width:100%;height:340px;display:block;background:#eceae4"></canvas>
+        <div class="note"><b>off-08 · фиолетовое</b> — основной скан замеров (одиночное, без ковра, 1.02M точек).</div></div>
+      <div><canvas id="sc_b" class="flat" style="width:100%;height:340px;display:block;background:#eceae4"></canvas>
+        <div class="note"><b>off-02 · красное</b> — второй ракурс/расцветка для сверки валика-обода.</div></div>
+      <div><canvas id="sc_c" class="flat" style="width:100%;height:340px;display:block;background:#eceae4"></canvas>
+        <div class="note"><b>v2 · чёрное</b> — третий скан для сверки силуэта и наклона.</div></div>
+    </div>
+  </div>
+
   <!-- UFO MAVIMATT (параметрическая модель по фото + размерам) -->
   <div class="card" style="border:2px solid #2c3e6b">
     <h2 style="color:#2c3e6b">UFO Mavimatt (Large) — параметрическая 3D-модель (крути под фото 1:1)</h2>
@@ -1157,6 +1171,45 @@ rs4(); addEventListener('resize',rs4); v4('iso');
 
   build();
 })();
+</script>
+
+<!-- 3 СКАНА-КРЕСЛА ДРУГ ПОД ДРУГОМ (после importmap — иначе import "three" падает) -->
+<script type="module">
+import * as T from "three";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+const SCANS=[
+  {id:'sc_a',url:'models/ufo-tripo-off08.glb'},
+  {id:'sc_b',url:'models/ufo-tripo-off02.glb'},
+  {id:'sc_c',url:'models/ufo-tripo-v2.glb'},
+];
+SCANS.forEach(mkViewer);
+function mkViewer({id,url}){
+  const cv=document.getElementById(id); if(!cv)return;
+  const rnd=new T.WebGLRenderer({canvas:cv,antialias:true}); rnd.setPixelRatio(Math.min(devicePixelRatio,2));
+  const sc=new T.Scene(); sc.background=new T.Color(0xeceae4);
+  const cam=new T.PerspectiveCamera(45,1,10,60000);
+  sc.add(new T.HemisphereLight(0xffffff,0x555555,1.1));
+  const dl=new T.DirectionalLight(0xffffff,0.85); dl.position.set(1,2,1.5); sc.add(dl);
+  const grp=new T.Group(); sc.add(grp);
+  let rx=0.5, ry=0.6, dist=3400, ctrY=600, spin=true;
+  function upd(){const w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;rnd.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();const px=Math.sin(ry)*Math.cos(rx)*dist,py=Math.sin(rx)*dist+ctrY,pz=Math.cos(ry)*Math.cos(rx)*dist;cam.position.set(px,py,pz);cam.lookAt(0,ctrY,0);}
+  new GLTFLoader().load(url,g=>{
+    const m=g.scene;
+    const bb=new T.Box3().setFromObject(m),s0=new T.Vector3();bb.getSize(s0);
+    const k=1330/Math.max(s0.x,s0.y,s0.z); m.scale.set(k,k,k);
+    m.updateMatrixWorld(true); const b2=new T.Box3().setFromObject(m),c2=new T.Vector3();b2.getCenter(c2);
+    m.position.x-=c2.x;m.position.z-=c2.z;m.position.y-=b2.min.y;
+    grp.add(m); const b3=new T.Box3().setFromObject(m),sz=new T.Vector3();b3.getSize(sz);
+    ctrY=sz.y/2; dist=Math.max(sz.x,sz.y,sz.z)*2.3; upd();
+  },undefined,e=>console.log('stack scan err',url,e&&e.message));
+  let dn=false,qx,qy;
+  cv.addEventListener('pointerdown',e=>{dn=true;spin=false;qx=e.clientX;qy=e.clientY;});
+  addEventListener('pointerup',()=>dn=false);
+  addEventListener('pointermove',e=>{if(!dn)return;ry+=(e.clientX-qx)*0.01;rx=Math.max(-1.3,Math.min(1.3,rx+(e.clientY-qy)*0.01));qx=e.clientX;qy=e.clientY;upd();});
+  cv.addEventListener('wheel',e=>{e.preventDefault();dist*=(1+Math.sign(e.deltaY)*0.08);upd();},{passive:false});
+  upd(); addEventListener('resize',upd);
+  (function loop(){requestAnimationFrame(loop);if(spin)ry+=0.004;upd();rnd.render(sc,cam);})();
+}
 </script>
 </body>
 </html>
