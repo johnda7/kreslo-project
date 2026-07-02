@@ -30,6 +30,16 @@
   .stats{display:flex;flex-wrap:wrap;gap:14px;font-size:13.5px;margin-top:6px}
   .stats b{color:var(--teal)}
   .stats .chip{background:#f0ede7;padding:6px 11px;border-radius:8px}
+  /* галерея-карусель — одна листающаяся строка вместо простыни */
+  .galbox{position:relative}
+  .refstrip{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:2px 40px 10px;scrollbar-width:thin}
+  .refstrip img.ref{flex:0 0 auto;scroll-snap-align:center}
+  .refstrip::-webkit-scrollbar{height:7px}
+  .refstrip::-webkit-scrollbar-thumb{background:#c9c2b4;border-radius:4px}
+  .galbtn{position:absolute;top:calc(50% - 5px);transform:translateY(-50%);z-index:2;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.92);cursor:pointer;font-size:17px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center}
+  .galbtn:hover{background:#fff}
+  .galbtn.prev{left:2px}
+  .galbtn.next{right:2px}
   /* narezka */
   #cutwrap{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   @media(max-width:720px){#cutwrap{grid-template-columns:1fr}#view{height:42vh}}
@@ -84,7 +94,9 @@
   <div class="card">
     <h2>Размеры кресла</h2>
     <div class="pad">
-      <div class="row"><label>Высота кресла</label><input id="sH" type="range" min="20" max="120" value="49" step="1" oninput="rebuild()"><span class="val" id="vH">49 см</span></div>
+      <div class="row"><label>Высота кресла</label><input id="sH" type="range" min="20" max="120" value="54" step="1" oninput="rebuild()"><span class="val" id="vH">54 см</span></div>
+      <div class="row"><label>Диаметр (ширина)</label><input id="sD" type="range" min="60" max="200" value="128" step="1" oninput="rebuild()"><span class="val" id="vD">128 см</span></div>
+      <div class="note">Крути под свои фото 1:1: высота + диаметр независимо. Таблица нарезки внизу пересчитывается автоматически. Старт — «среднее» между целью Ø110/h49 и реалом Ø145/h59.</div>
       <div class="stats" id="stats"></div>
     </div>
   </div>
@@ -113,24 +125,144 @@
 
   <!-- РЕАЛЬНОЕ КРЕСЛО (отдельный 3D) -->
   <div class="card" style="border:2px solid #c0392b">
-    <h2 style="color:#c0392b">Реальное кресло Джона (LiDAR-скан) — независимый 3D</h2>
-    <p style="color:#555;font-size:14px;margin:4px 0 10px">Это то, что Джон уже вырезал и склеил (отсканировано). Размеры по скану: <b>макс диаметр ~145 см, высота чаши ~59 см, дно ~56 см</b>. Крутить можно отдельно — мышкой.</p>
+    <h2 style="color:#c0392b">Кресло-референс FONTE (LiDAR-скан, настоящий меш) — независимый 3D</h2>
+    <p style="color:#555;font-size:14px;margin:4px 0 10px">Настоящий 3D-меш скана (Apple ObjectCapture), не облако точек. Габариты скана: <b>ширина ~100, глубина ~104, высота ~139 см</b> (этикетка FONTE 98×100×142). Форма-референс для 3-го кресла. Крути мышкой — стоит на месте, не качается.</p>
     <div id="view2" style="position:relative;height:420px;border-radius:12px;overflow:hidden;background:#eceae4">
       <canvas id="c2" style="width:100%;height:100%;display:block"></canvas>
       <div class="hint">🖱️ тяни — повернуть · колесо — зум</div>
       <div class="ctrls" style="position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:6px">
         <button onclick="v2('side')">Сбоку</button>
         <button onclick="v2('front')">Спереди</button>
+        <button onclick="v2('top')">Сверху</button>
         <button onclick="v2('iso')">Разворот</button>
-        <button onclick="rock2()">▶ Качнуть</button>
       </div>
+    </div>
+    <p style="color:#c0392b;font-weight:600;font-size:13px;margin:12px 0 6px">📷 Эталон FONTE в магазине (по нему сверяем меш и ножки) — клик по фото открывает крупно, листается стрелками:</p>
+    <div class="galbox"><button class="galbtn prev" onclick="galScroll(this,-1)" aria-label="назад">‹</button><button class="galbtn next" onclick="galScroll(this,1)" aria-label="вперёд">›</button>
+    <div class="refstrip" data-gallery="fonte">
+      <img src="images/fonte-ref-01.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 1">
+      <img src="images/fonte-ref-02.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 2">
+      <img src="images/fonte-ref-03.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 3">
+      <img src="images/fonte-ref-04.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 4">
+      <img src="images/fonte-ref-05.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 5">
+      <img src="images/fonte-ref-06.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 6">
+      <img src="images/fonte-ref-07.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 7">
+      <img src="images/fonte-ref-08.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 8">
+      <img src="images/fonte-ref-09.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 9">
+      <img src="images/fonte-ref-10.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 10">
+      <img src="images/fonte-ref-11.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 11">
+      <img src="images/fonte-ref-12.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 12">
+      <img src="images/fonte-ref-13.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="FONTE 13 — замер ножек рулеткой">
+    </div></div>
+  </div>
+
+  <!-- UFO MAVIMATT (параметрическая модель по фото + размерам) -->
+  <div class="card" style="border:2px solid #2c3e6b">
+    <h2 style="color:#2c3e6b">UFO Mavimatt (Large) — параметрическая 3D-модель (крути под фото 1:1)</h2>
+    <p style="color:#555;font-size:14px;margin:4px 0 10px">Осесимметричная линза-диск (тело вращения), строится по фото производителя + реальным размерам. <b>Реальные размеры Mavimatt: Large 170×133×96 см · Mini 120×90×80 см</b> (габарит под наклоном; истинный диаметр диска ≈ ширина 133). Снизу выпуклый купол-балансир (качается), сверху чаша-сиденье, по экватору хром-кантик. Ползунками подгоняй под фото.</p>
+    <div id="view3" style="position:relative;height:420px;border-radius:12px;overflow:hidden;background:#eceae4">
+      <canvas id="c3" style="width:100%;height:100%;display:block"></canvas>
+      <div class="hint">🖱️ тяни — повернуть · колесо — зум</div>
+      <input id="zoom3" type="range" min="1800" max="8000" value="3200" oninput="setZoom3(this.value)" title="зум (крупнее ← → мельче)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%) rotate(90deg);transform-origin:right center;width:150px;accent-color:#2c3e6b">
+    </div>
+    <div class="ctrls" style="position:static;transform:none;display:flex;gap:6px;justify-content:center;margin-top:8px">
+      <button onclick="v3('side')">Сбоку</button>
+      <button onclick="v3('front')">Спереди</button>
+      <button onclick="v3('top')">Сверху</button>
+      <button onclick="v3('iso')">Разворот</button>
+      <button onclick="rock3()">▶ Качать</button>
+    </div>
+    <div class="pad" style="margin-top:12px">
+      <div class="row"><label>Диаметр диска</label><input type="range" min="80" max="200" value="133" step="1" oninput="ufoSet('D',this.value)"><span class="val" id="u_vD">133 см</span></div>
+      <div class="row"><label>Толщина линзы</label><input type="range" min="35" max="90" value="61" step="1" oninput="ufoSet('T',this.value)"><span class="val" id="u_vT">61 см</span></div>
+      <div class="row"><label>Вход сиденья Ø</label><input type="range" min="70" max="130" value="112" step="1" oninput="ufoSet('S',this.value)"><span class="val" id="u_vS">112 см</span></div>
+      <div class="row"><label>Глубина сиденья</label><input type="range" min="15" max="50" value="30" step="1" oninput="ufoSet('B',this.value)"><span class="val" id="u_vB">30 см</span></div>
+      <div class="note">Крути под фото Mavimatt 1:1. Старт = реальный Large (диск Ø133, толщина 61, вход сиденья Ø112, глубина 21 см).</div>
+    </div>
+    <p style="color:#2c3e6b;font-weight:600;font-size:13px;margin:12px 0 6px">📷 РЕАЛЬНОЕ кресло UFO (кадры из видео с производства Mavimatt — по ним строим 3D) + рендеры. Клик — крупно, листается стрелками:</p>
+    <div class="galbox"><button class="galbtn prev" onclick="galScroll(this,-1)" aria-label="назад">‹</button><button class="galbtn next" onclick="galScroll(this,1)" aria-label="вперёд">›</button>
+    <div class="refstrip" data-gallery="ufo">
+      <img src="images/ufo-real-side.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #2c3e6b;cursor:zoom-in" loading="lazy" alt="РЕАЛ: сбоку — плоская линза, хром-обод, глубокое сиденье с валиком">
+      <img src="images/ufo-real-dome.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #2c3e6b;cursor:zoom-in" loading="lazy" alt="РЕАЛ: низ — пологий выпуклый купол-балансир (на нём качается)">
+      <img src="images/ufo-real-seat.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #2c3e6b;cursor:zoom-in" loading="lazy" alt="РЕАЛ: сиденье сверху — валик по краю + центр-подушка">
+      <img src="images/ufo-real-front.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #2c3e6b;cursor:zoom-in" loading="lazy" alt="РЕАЛ: спереди — готовое чёрное кожаное">
+      <img src="images/ufo-real-shell.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #b5651d;cursor:zoom-in" loading="lazy" alt="РЕАЛ: голая стеклопластиковая скорлупа + жёлтый поролон (как устроено)">
+      <img src="images/ufo-real2-red-side.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #a02020;cursor:zoom-in" loading="lazy" alt="РЕАЛ (видео 2): красное готовое UFO, наклон-качание сбоку">
+      <img src="images/ufo-real2-red-seat.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #a02020;cursor:zoom-in" loading="lazy" alt="РЕАЛ (видео 2): красное — глубокое сиденье сверху-спереди, валик+центр-подушка">
+      <img src="images/ufo-real2-red-sitting.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #a02020;cursor:zoom-in" loading="lazy" alt="РЕАЛ (видео 2): человек СИДИТ в красном кресле — масштаб и посадка">
+      <img src="images/ufo-ref-side.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="UFO сбоку — линза с острым ободом (рендер)">
+      <img src="images/ufo-ref-pair.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="UFO пара — низ-купол и чаша-сиденье">
+      <img src="images/ufo-ref-outdoor.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="UFO наклонённое, качается на куполе">
+      <img src="images/ufo-ref-gold.jpg" class="ref" style="height:190px;border-radius:8px;border:1px solid #cfcabf;cursor:zoom-in" loading="lazy" alt="UFO разрез формы">
+      <img src="images/mavimatt/off-01.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #1a8a3c;cursor:zoom-in" loading="lazy" alt="ОФИЦИАЛ Mavimatt: человек сидит в белом UFO — глубина сиденья, посадка">
+      <img src="images/mavimatt/off-02.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #1a8a3c;cursor:zoom-in" loading="lazy" alt="ОФИЦИАЛ Mavimatt: красное сиденье 3/4 — толстый валик-бортик кольцом, глубокая чаша">
+      <img src="images/mavimatt/off-03.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #1a8a3c;cursor:zoom-in" loading="lazy" alt="ОФИЦИАЛ Mavimatt: UFO Colore">
+      <img src="images/mavimatt/off-04.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #1a8a3c;cursor:zoom-in" loading="lazy" alt="ОФИЦИАЛ Mavimatt: UFO Colore">
+      <img src="images/mavimatt/off-05.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #1a8a3c;cursor:zoom-in" loading="lazy" alt="ОФИЦИАЛ Mavimatt: UFO Colore ракурс">
+      <img src="images/mavimatt/off-06.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #1a8a3c;cursor:zoom-in" loading="lazy" alt="ОФИЦИАЛ Mavimatt: UFO Colore ракурс">
+      <img src="images/mavimatt/off-07.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #1a8a3c;cursor:zoom-in" loading="lazy" alt="ОФИЦИАЛ Mavimatt: UFO Colore ракурс">
+      <img src="images/mavimatt/off-08.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #1a8a3c;cursor:zoom-in" loading="lazy" alt="ОФИЦИАЛ Mavimatt: фиолетовое UFO сбоку в интерьере — профиль линзы">
+      <img src="images/mavimatt/off-09.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #1a8a3c;cursor:zoom-in" loading="lazy" alt="ОФИЦИАЛ Mavimatt: синее хром UFO сбоку — наклон-качалка, профиль">
+      <img src="images/mavimatt/off-10.jpg" class="ref" style="height:190px;border-radius:8px;border:2px solid #1a8a3c;cursor:zoom-in" loading="lazy" alt="ОФИЦИАЛ Mavimatt: золотое UFO">
+    </div></div>
+    <p style="color:#1a8a3c;font-size:11px;margin:4px 0 0">🟢 зелёная рамка — официальные фото Mavimatt (mavimatt.com), автозагрузка в проект. По ним и подгоняю 3D.</p>
+  </div>
+
+  <!-- НАРЕЗКА ПЕНОПЛАСТА ПОД MAVIMATT LARGE (копия 1:1 по официальным размерам) -->
+  <div class="card" style="border:2px solid #2c3e6b">
+    <h2 style="color:#2c3e6b">Нарезка пенопласта — Mavimatt Large 1:1 (копия по официальным размерам)</h2>
+    <p style="color:#555;font-size:14px;margin:4px 0 10px">Копия <b>один-в-один</b> Mavimatt UFO Large. <b>Профиль ЗАМЕРЕН со скана off-08</b> (фиолетовое одиночное кресло, БЕЗ ковра — чистый) методом John (PCA + СЕКТОР-метод: 28 полос × 36 секторов, наруж. стенка = медиана max-радиуса, внутр. каверна = медиана min-радиуса, 1.02M точек). Форма: низ — <b>круглый выпуклый купол</b> (дуга сферы, Ø36 у полюса), радиус гладко растёт до <b>обода Ø133 см</b> (самый широкий, на ~70% высоты), затем <b>закатанный валик-рим внутрь</b>. Сиденье ШИРОКОЕ (замер по 3D-проекции off-08): устье-обод <b>Ø103</b>, кожа-сиденье <b>Ø94 = 91% устья</b> — почти весь круг, концентрично, нахлёст обода ~5 см ровный. Толщина <b>58 см</b> (чистый замер; off-09 занижал до 45 из-за прилипшего ковра). Режем из твоих листов <b>120×60 см, толщина 5,08 см (2 дюйма)</b>: низ — сплошные диски-купол, верх — кольца-чаша.</p>
+    <div id="cutwrapM">
+      <div>
+        <canvas id="flatM" class="flat" width="540" height="480"></canvas>
+        <div class="note">Разрез <b>СБОКУ</b>. <b>Голубое</b> — сплошные диски-купол снизу. <b>Серое</b> — стенки колец (чаша). <b>Бирюза</b> — наружный контур Ø133, <b>красный пунктир</b> — полость сиденья.</div>
+      </div>
+      <div>
+        <canvas id="topM" class="flat" width="540" height="480"></canvas>
+        <div class="note">Вид <b>СВЕРХУ</b> в СМ (замер off-08, концентрично). <b>Серый</b> Ø133 — макс.ширина линзы (экватор). <b>Бирюза</b> Ø103 — устье-обод (что видно сверху). <b>Красный</b> Ø94 — кожа-сиденье = <b>91% устья</b>, занимает почти весь круг. Нахлёст обода ~5 см ровный по кругу.</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin:10px 0 2px;padding:8px 12px;background:#f3f1ea;border-radius:8px;flex-wrap:wrap">
+      <span style="font-size:13px;color:#2c3e6b;font-weight:600">Смещение сиденья (вниз/влево):</span>
+      <input id="seatOffSl" type="range" min="0" max="6" step="0.5" value="2.5" oninput="setSeatOff(this.value)" style="flex:1;min-width:180px;max-width:320px">
+      <b id="u_vO" style="color:#c0392b;font-size:13px;min-width:56px">2.5 см</b>
+      <span style="font-size:11px;color:#888">скан off-08 = 0 (концентрично); подгони под то, что видишь на реальном кресле</span>
+    </div>
+    <div id="cutwrap2M">
+      <div style="max-height:480px;overflow:auto"><table id="tblM"></table></div>
+      <div class="stats" id="statsM" style="margin-top:8px"></div>
+    </div>
+    <h2 style="margin:16px 0 0;font-size:14px;color:#2c3e6b">Раскладка листов 120×60 — экономно</h2>
+    <canvas id="nestM" class="flat" width="1040" height="420" style="margin-top:10px"></canvas>
+    <div class="note">Каждый лист <b>120×60 см</b> (серая рамка). Круг ≤60 → целиком из 1 листа. Круг 60–120 → 2 листа встык (красная линия — склейка). Ободок Ø>120 (только у экватора) докраивается тонким кольцом-сегментами из обрезков. Матрёшка: из серединки большого кольца режется следующее.</div>
+    <div class="sheetinfo" id="sheetM"></div>
+  </div>
+
+  <!-- UFO ВАРИАНТ «КОЛЬЦО САТУРНА» (копия верхнего блока — тут улучшаем отдельно) -->
+  <div class="card" style="border:2px solid #7a5cc6">
+    <h2 style="color:#7a5cc6">UFO — вариант «Кольцо Сатурна» (рабочая копия для улучшений)</h2>
+    <p style="color:#555;font-size:14px;margin:4px 0 10px">Та же модель, что сверху, но держится на <b>кольце-противовесе</b> (не на низ-утяжелителе-куполе). Кресло балансирует НА кольце — отдельная концепция. Верхний блок не трогаем, улучшаем здесь.</p>
+    <div id="view4" style="position:relative;height:420px;border-radius:12px;overflow:hidden;background:#eceae4">
+      <canvas id="c4" style="width:100%;height:100%;display:block"></canvas>
+      <div class="hint">🖱️ тяни — повернуть · колесо — зум</div>
+      <div class="ctrls" style="position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:6px">
+        <button onclick="v4('side')">Сбоку</button>
+        <button onclick="v4('front')">Спереди</button>
+        <button onclick="v4('top')">Сверху</button>
+        <button onclick="v4('iso')">Разворот</button>
+        <button onclick="rock4()">▶ Качать</button>
+      </div>
+      <input id="zoom4" type="range" min="1800" max="8000" value="3200" oninput="setZoom4(this.value)" title="зум (крупнее ← → мельче)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%) rotate(90deg);transform-origin:right center;width:150px;accent-color:#7a5cc6">
     </div>
   </div>
 
 </div>
 
 <script type="importmap">
-{ "imports": { "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js" }}
+{ "imports": {
+  "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
 </script>
 <script type="module">
 import * as THREE from 'three';
@@ -293,13 +425,13 @@ function interp(x,xs,ys){
 
 function rebuild(){
   const H=+document.getElementById('sH').value;       // см высота кресла
-  // диаметр привязан к высоте по пропорции чашки, но округляем красиво
   const cupH=BASE_ZMAX/10;
   const cupD=2*BASE_RMAX/10;
-  const k=H/cupH;
-  let Dtop=cupD*k;
+  let Dtop=+document.getElementById('sD').value;       // см диаметр — НЕЗАВИСИМЫЙ ползунок (крути под фото 1:1)
   Dtop=Math.round(Dtop/2)*2;        // округление диаметра до чётного (радиус целый)
+  const k=H/cupH;                    // масштаб по высоте (для дна и подписей)
   document.getElementById('vH').textContent=H+' см';
+  document.getElementById('vD').textContent=Dtop+' см';
   const Hmm=H*10, Dmm=Dtop*10;
   curH=Hmm; curDtop=Dmm;
   buildMesh(); fitCam(); upd();
@@ -508,36 +640,506 @@ const rnd=new THREE2.WebGLRenderer({canvas:cv,antialias:true});
 rnd.setPixelRatio(Math.min(devicePixelRatio,2));
 const sc2=new THREE2.Scene(); sc2.background=new THREE2.Color(0xeceae4);
 const cam2=new THREE2.PerspectiveCamera(45,1,1,40000);
-sc2.add(new THREE2.AmbientLight(0xffffff,0.9));
-const gr2=new THREE2.Mesh(new THREE2.CircleGeometry(2000,64),new THREE2.MeshStandardMaterial({color:0xcfc8b8,roughness:1}));
+sc2.add(new THREE2.HemisphereLight(0xffffff,0x9a8c78,0.95));
+const dl2=new THREE2.DirectionalLight(0xffffff,0.75); dl2.position.set(700,1400,600); sc2.add(dl2);
+const dl2b=new THREE2.DirectionalLight(0xffffff,0.25); dl2b.position.set(-600,500,-700); sc2.add(dl2b);
+const gr2=new THREE2.Mesh(new THREE2.CircleGeometry(1100,64),new THREE2.MeshStandardMaterial({color:0xd8d2c4,roughness:1}));
 gr2.rotation.x=-Math.PI/2; gr2.position.y=-1; sc2.add(gr2);
-sc2.add(new THREE2.GridHelper(4000,32,0xaa9988,0xb0a89a));
+sc2.add(new THREE2.GridHelper(2200,22,0xaa9988,0xc2bab0));
 const grp2=new THREE2.Group(); sc2.add(grp2);
-// облако точек
-const g=new THREE2.BufferGeometry();
-g.setAttribute('position',new THREE2.Float32BufferAttribute(CLOUD,3));
-g.computeBoundingBox();
-const pm=new THREE2.PointsMaterial({color:0xc0392b,size:9});
-const cloud3=new THREE2.Points(g,pm); grp2.add(cloud3);
-// центрируем по горизонтали, ставим на пол
-const bb=g.boundingBox; const cx=(bb.min.x+bb.max.x)/2, cz=(bb.min.z+bb.max.z)/2;
-cloud3.position.set(-cx,0,-cz);
-const midY=300;
-// вращение по кругу (НЕ качается — стоит на ножке)
-let azim2=0, an2=null;
-function pose2(){grp2.rotation.y=azim2;}
-window.rock2=()=>{if(an2){cancelAnimationFrame(an2);an2=null;return;}(function a(){azim2+=0.01;pose2();an2=requestAnimationFrame(a);})();};
-let cr2=2.0, ca2=0.7, cb2=0.4;
-function place2(){const R=1500*cr2;cam2.position.set(R*Math.cos(cb2)*Math.sin(ca2),R*Math.sin(cb2)+midY,R*Math.cos(cb2)*Math.cos(ca2));cam2.lookAt(0,midY,0);}
-window.v2=(w)=>{if(w==='side'){ca2=Math.PI/2;cb2=0.1;}else if(w==='front'){ca2=0;cb2=0.1;}else{ca2=0.7;cb2=0.4;}place2();};
-function rs2(){const w=cv.clientWidth,h=cv.clientHeight;rnd.setSize(w,h,false);cam2.aspect=w/h;cam2.updateProjectionMatrix();place2();}
-let drag=false,px,py;
-cv.addEventListener('pointerdown',e=>{drag=true;px=e.clientX;py=e.clientY;});
-addEventListener('pointerup',()=>drag=false);
-addEventListener('pointermove',e=>{if(!drag)return;azim2-=(e.clientX-px)*0.01;cb2=Math.max(-0.2,Math.min(1.3,cb2+(e.clientY-py)*0.008));px=e.clientX;py=e.clientY;place2();pose2();});
-cv.addEventListener('wheel',e=>{e.preventDefault();cr2=Math.max(0.8,Math.min(5,cr2+(e.deltaY>0?0.15:-0.15)));place2();},{passive:false});
+// РЕАЛЬНОЕ КРЕСЛО: настоящий меш LiDAR-скана (Apple ObjectCapture) → data/chair_mesh.json
+// вершины в мм, Y вверх, центрировано по X/Z, стоит на полу. Размеры: ~100×104×139 см (этикетка FONTE 98×100×142)
+const midY=650;
+const cmat=new THREE2.MeshStandardMaterial({color:0xc7a878,roughness:0.75,metalness:0.0,side:THREE2.DoubleSide,flatShading:false});
+fetch('data/chair_mesh.json').then(r=>r.json()).then(d=>{
+  const mg=new THREE2.BufferGeometry();
+  mg.setAttribute('position',new THREE2.Float32BufferAttribute(d.v,3));
+  mg.setIndex(d.i);
+  mg.computeVertexNormals(); mg.computeBoundingBox();
+  const chair=new THREE2.Mesh(mg,cmat); grp2.add(chair);
+}).catch(e=>console.error('mesh load fail',e));
+// орбита — ЕДИНЫЙ формат с верхним блоком (rx=наклон, ry=азимут, dist=зум, lookAt в центр)
+let rx2=0.15, ry2=0.7, dist2=3400;
+function upd2(){const cx=Math.sin(ry2)*Math.cos(rx2)*dist2, cy=Math.sin(rx2)*dist2+midY, cz=Math.cos(ry2)*Math.cos(rx2)*dist2; cam2.position.set(cx,cy,cz); cam2.lookAt(0,midY,0);}
+window.v2=(v)=>{if(v==='side'){rx2=0.05;ry2=Math.PI/2;}else if(v==='front'){rx2=0.05;ry2=0;}else if(v==='top'){rx2=1.25;ry2=0;}else{rx2=0.2;ry2=0.7;}upd2();};
+function rs2(){const w=cv.clientWidth,h=cv.clientHeight;rnd.setSize(w,h,false);cam2.aspect=w/h;cam2.updateProjectionMatrix();upd2();}
+let down2=false,px2,py2;
+cv.addEventListener('pointerdown',e=>{down2=true;px2=e.clientX;py2=e.clientY;});
+addEventListener('pointerup',()=>down2=false);
+addEventListener('pointermove',e=>{if(!down2)return;ry2+=(e.clientX-px2)*0.01;rx2=Math.max(-1.3,Math.min(1.3,rx2+(e.clientY-py2)*0.01));px2=e.clientX;py2=e.clientY;upd2();});
+cv.addEventListener('wheel',e=>{e.preventDefault();dist2*=(1+Math.sign(e.deltaY)*0.08);dist2=Math.max(1500,Math.min(9000,dist2));upd2();},{passive:false});
+let pd2=0;
+cv.addEventListener('touchmove',e=>{if(e.touches.length===2){const t=e.touches;const dd=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);if(pd2)dist2*=pd2/dd;pd2=dd;upd2();}},{passive:false});
+cv.addEventListener('touchend',()=>pd2=0);
 rs2(); addEventListener('resize',rs2); v2('iso');
 (function loop2(){requestAnimationFrame(loop2);rnd.render(sc2,cam2);})();
+</script>
+<script type="module">
+import * as THREE3 from "three";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+const cv3=document.getElementById('c3');
+const rnd3=new THREE3.WebGLRenderer({canvas:cv3,antialias:true});
+rnd3.setPixelRatio(Math.min(devicePixelRatio,2));
+const sc3=new THREE3.Scene(); sc3.background=new THREE3.Color(0xeceae4);
+const cam3=new THREE3.PerspectiveCamera(45,1,1,40000);
+sc3.add(new THREE3.HemisphereLight(0xffffff,0x8892a0,0.9));
+const d3a=new THREE3.DirectionalLight(0xffffff,0.85); d3a.position.set(700,1400,600); sc3.add(d3a);
+const d3b=new THREE3.DirectionalLight(0xffffff,0.3); d3b.position.set(-600,500,-700); sc3.add(d3b);
+const gr3=new THREE3.Mesh(new THREE3.CircleGeometry(1300,64),new THREE3.MeshStandardMaterial({color:0xd8d2c4,roughness:1}));
+gr3.rotation.x=-Math.PI/2; gr3.position.y=-1; sc3.add(gr3);
+sc3.add(new THREE3.GridHelper(2600,26,0xaa9988,0xc2bab0));
+const grp3=new THREE3.Group(); sc3.add(grp3); grp3.rotation.order='YXZ';
+// ЛИНЕЙКИ В САНТИМЕТРАХ (статичные в мире): крути кресло — читай ширину по X и высоту по Y в см.
+const ruler3=new THREE3.Group(); sc3.add(ruler3);
+function txtSprite3(txt,color,w){
+  const c=document.createElement('canvas'); c.width=256; c.height=96;
+  const g=c.getContext('2d'); g.fillStyle=color||'#2c3e6b'; g.font='bold 60px Arial'; g.textAlign='center'; g.textBaseline='middle';
+  g.fillText(txt,128,48);
+  const tx=new THREE3.CanvasTexture(c); tx.minFilter=THREE3.LinearFilter;
+  const sp=new THREE3.Sprite(new THREE3.SpriteMaterial({map:tx,depthTest:false,transparent:true}));
+  sp.scale.set(w||150,(w||150)*0.375,1); return sp;
+}
+function seg3(a,b,mat){return new THREE3.Line(new THREE3.BufferGeometry().setFromPoints([a,b]),mat);}
+function buildRulers3(bb){
+  [...ruler3.children].forEach(o=>{ruler3.remove(o); o.material&&(o.material.map&&o.material.map.dispose(),o.material.dispose()); o.geometry&&o.geometry.dispose();});
+  const maxX=Math.ceil(bb.max.x/100)*100, maxH=Math.ceil(bb.max.y/100)*100, zF=bb.max.z+140;
+  const mat=new THREE3.LineBasicMaterial({color:0x2c3e6b});
+  // горизонтальная (ширина по X) — вдоль пола перед креслом
+  ruler3.add(seg3(new THREE3.Vector3(-maxX,2,zF),new THREE3.Vector3(maxX,2,zF),mat));
+  for(let x=-maxX;x<=maxX;x+=100){
+    ruler3.add(seg3(new THREE3.Vector3(x,2,zF),new THREE3.Vector3(x,2,zF+45),mat));
+    const sp=txtSprite3((x/10).toFixed(0)); sp.position.set(x,55,zF+95); ruler3.add(sp);
+  }
+  const ws=txtSprite3('ширина, см','#777',300); ws.position.set(0,55,zF+240); ruler3.add(ws);
+  // вертикальная (высота по Y) — слева
+  const xL=-maxX-170;
+  ruler3.add(seg3(new THREE3.Vector3(xL,0,0),new THREE3.Vector3(xL,maxH,0),mat));
+  for(let y=0;y<=maxH;y+=100){
+    ruler3.add(seg3(new THREE3.Vector3(xL,y,0),new THREE3.Vector3(xL-45,y,0),mat));
+    const sp=txtSprite3((y/10).toFixed(0)); sp.position.set(xL-130,y,0); ruler3.add(sp);
+  }
+  const hs=txtSprite3('высота, см','#777',300); hs.position.set(xL-150,maxH*0.5,0); ruler3.add(hs);
+}
+// ПАРАМЕТРИЧЕСКАЯ 3D-модель UFO Mavimat — тело вращения (lathe). Точная осесимметричная линза-диск
+// по фото производителя + реальным размерам Large. Крутится ползунками ниже (диаметр/толщина/сиденье).
+const TILT3=-0.94;                   // наклон линзы ~54° для параметрики (обод к полу)
+let curTilt3=TILT3;                   // текущий наклон группы (0 для Tripo-скана — он уже позирован из фото)
+let baseLift3=0, azim3=0, ctrY3=230;
+function pose3(){grp3.rotation.set(0,azim3,curTilt3); grp3.position.y=baseLift3;}
+function recompute3(){
+  grp3.rotation.set(0,0,curTilt3); grp3.position.y=0; grp3.updateMatrixWorld(true);
+  const bb=new THREE3.Box3().setFromObject(grp3);
+  baseLift3=-bb.min.y; ctrY3=(bb.max.y-bb.min.y)/2; pose3();
+  const bbR=bb.clone(); bbR.min.y-=bb.min.y; bbR.max.y-=bb.min.y; buildRulers3(bbR);   // линейки см (высота от пола=0)
+  if(window.__upd3)window.__upd3();   // держим камеру нацеленной на центр модели при смене размеров/наклона
+}
+// параметры (мм) обведены по реальным фото Mavimat UFO Large: диск Ø133, толщина линзы 61, вход сиденья Ø112
+let uR=665, uThick=610, uOpen=560, uSeatDepth=300;
+let ufoShell=null, ufoSeat=null, ufoRim=null;
+const shellMat3=new THREE3.MeshStandardMaterial({color:0x0e1013,roughness:0.1,metalness:0.15,side:THREE3.DoubleSide}); // глянцевый чёрный стеклопластик
+const bowlMat3=new THREE3.MeshStandardMaterial({color:0x34373e,roughness:0.72,metalness:0.02,side:THREE3.DoubleSide});  // матовая угольная кожа сиденья/валика (светлее корпуса — читается)
+const rimMat3=new THREE3.MeshStandardMaterial({color:0xc9ccd2,roughness:0.12,metalness:1.0});                          // глянцевый кант по экватору
+function buildUfo(){
+  [ufoShell,ufoRim].forEach(m=>{if(m){grp3.remove(m);m.geometry.dispose();}});
+  if(ufoSeat){grp3.remove(ufoSeat);ufoSeat.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
+  const uHb=Math.round(uThick*0.58), uHt=uThick-uHb;   // низ глубже верха (качалка снизу)
+  const eqZ=uHb;
+  const topZ=eqZ+uHt*Math.sqrt(Math.max(0,1-(uOpen/uR)*(uOpen/uR)));   // высота ранта у отверстия
+  // 1) ГЛЯНЦЕВЫЙ КОРПУС-ЛИНЗА: нижний купол-качалка → ребро-экватор → верхний купол до отверстия
+  const P=[]; const V=(r,z)=>P.push(new THREE3.Vector2(Math.max(0.5,r),z));
+  for(let i=0;i<=24;i++){const t=i/24*Math.PI/2; V(uR*Math.sin(t), eqZ*(1-Math.cos(t)));}                 // нижний купол (0,0)→(uR,eqZ)
+  for(let i=1;i<=18;i++){const t=i/18; const r=uR+(uOpen-uR)*t; V(r, eqZ+uHt*Math.sqrt(Math.max(0,1-(r/uR)*(r/uR))));} // верх до отверстия
+  const sg=new THREE3.LatheGeometry(P,192); sg.computeVertexNormals();
+  ufoShell=new THREE3.Mesh(sg,shellMat3); grp3.add(ufoShell);
+  // 2) СИДЕНЬЕ (кожа) — единая лата ВПРИТЫК к кромке корпуса (без щели): толстый валик-бортик → глубокая чаша.
+  //    «Язычок» спереди-снизу возникает сам из общего наклона диска (низкая точка кольца-валика).
+  const B=[]; const VB=(r,z)=>B.push(new THREE3.Vector2(Math.max(0.5,r),z));  // r — от оси, z — высота
+  VB(uOpen,topZ);                                       // стык с корпусом (кромка отверстия)
+  VB(uOpen+28,topZ+42);                                 // наружная губа валика
+  VB(uOpen-14,topZ+100); VB(uOpen-95,topZ+72);          // толстый гребень валика
+  const rim=uOpen-150, bot=topZ-uSeatDepth;
+  VB(rim,topZ+18);                                      // внутренняя кромка сиденья
+  VB(rim*0.9,topZ-uSeatDepth*0.28); VB(rim*0.6,bot+uSeatDepth*0.16);
+  VB(rim*0.28,bot+uSeatDepth*0.04); VB(0.5,bot);        // глубокая чаша до дна
+  const bg=new THREE3.LatheGeometry(B,192); bg.computeVertexNormals();
+  ufoSeat=new THREE3.Mesh(bg,bowlMat3); grp3.add(ufoSeat);
+  // 3) глянцевый кант по ребру-экватору
+  ufoRim=new THREE3.Mesh(new THREE3.TorusGeometry(uR-3,10,20,200),rimMat3);
+  ufoRim.rotation.x=Math.PI/2; ufoRim.position.y=eqZ; grp3.add(ufoRim);
+  recompute3();
+}
+buildUfo();
+// TRIPO-СКАН: AI-реконструкция кресла из реального фото (валик, кожа, PBR-текстура) — точнее ручной lathe.
+// Грузим ufo-tripo.glb (первый скан вышел лучше второго). По умолчанию показываем скан, параметрику прячем.
+let ufoTripo=null;
+const _qp=new URLSearchParams(location.search);
+const SCAN_URL=_qp.get('scan')||'models/ufo-tripo-off08.glb';   // чёрное кресло (кожа+тёмно-синяя оболочка), низ гладкий. Джон: это кресло «идеально». Tripo прихватил всю сцену (пол-ковёр + фигурка + столик) → кадрируем по САМОМУ креслу ниже. off-08 (фиолетовое) — fallback, но с зазубриной на ободе.
+const SR={x:+(_qp.get('rx')||0),y:+(_qp.get('ry')||0),z:+(_qp.get('rz')||0)};   // отладочный разворот скана
+function groundScan(m){                                    // центр по XZ + низ строго на пол (чтобы низ не «терялся»)
+  m.updateMatrixWorld(true);
+  const b=new THREE3.Box3().setFromObject(m); const c=new THREE3.Vector3(); b.getCenter(c);
+  m.position.x-=c.x; m.position.z-=c.z; m.position.y-=b.min.y;
+}
+new GLTFLoader().load(SCAN_URL, gltf=>{
+  const m=gltf.scene;
+  let mesh=null; m.traverse(o=>{if(o.isMesh)mesh=o;});
+  const bb0=new THREE3.Box3().setFromObject(m); const s0=new THREE3.Vector3(); bb0.getSize(s0);
+  // off-09: Tripo прихватил всю сцену (пол-ковёр + фигурка + столик). Кадрируем по САМОМУ креслу —
+  // высокая наклонённая чаша-линза у -Z. Иначе масштаб/центр считаются по полу → кресло мелкое и сбоку.
+  const cluttered=/off09/.test(SCAN_URL);
+  let k;
+  if(cluttered && mesh){
+    const p=mesh.geometry.attributes.position, n=p.count;
+    let mnY=1e9,mxY=-1e9; for(let i=0;i<n;i++){const y=p.getY(i); if(y<mnY)mnY=y; if(y>mxY)mxY=y;}
+    const H=mxY-mnY, tY=mnY+H*0.55;                   // верх чаши = самый высокий объект (пол/фигурка/столик ниже)
+    let mnx=1e9,mxx=-1e9,mnz=1e9,mxz=-1e9;            // габарит кресла, минус фигурка-мишка (X<-0.12 & Z>0.02)
+    for(let i=0;i<n;i++){const y=p.getY(i); if(y>tY){const x=p.getX(i),z=p.getZ(i); if(x<-0.12&&z>0.02)continue; if(x<mnx)mnx=x; if(x>mxx)mxx=x; if(z<mnz)mnz=z; if(z>mxz)mxz=z;}}
+    k=1330/(mxx-mnx);                                 // диаметр = ширина по X (не укорочена наклоном) → Ø133 см
+    m.scale.set(k,k,k);
+    m.rotation.set(SR.x,SR.y,SR.z);
+    m.position.x=-((mnx+mxx)/2)*k;                    // центр кресла → в 0 по XZ
+    m.position.z=-(((mnz+mxz)/2)+(mxz-mnz)*0.30)*k;  // порог отрезал перед чаши → сдвиг центра вперёд
+    m.position.y=-mnY*k;                              // низ сцены → на пол
+  } else {
+    k=1330/Math.max(s0.x,s0.y,s0.z);                  // наибольший габарит → Ø133 см (реальный Large)
+    const rx0=(s0.z>0?s0.z/s0.x:1);                   // скан off-05 овальный (X<Z) → тянем X до круга
+    m.scale.set(k*rx0,k,k);
+    m.rotation.set(SR.x,SR.y,SR.z);                   // raw-поза скана (0,0,0) — чаша уже смотрит вверх
+    groundScan(m);
+  }
+  ufoTripo=m; grp3.add(m); window.__scan=m; window.__grp3=grp3; window.__recompute3=recompute3; window.__THREE3=THREE3;
+  window.__setPose=(x,y,z)=>{m.rotation.set(x,y,z);groundScan(m);recompute3();return 'posed '+[x,y,z];};
+  window.__stretch=(sx,sy,sz)=>{m.scale.set(k*sx,k*sy,k*sz);groundScan(m);recompute3();return 'stretched';};
+  ufoShell.visible=false; ufoSeat.visible=false; ufoRim.visible=false;   // прячем параметрику, показываем скан
+  curTilt3=0;                                        // скан уже позирован из фото — общий 54° наклон не нужен
+  recompute3();
+  const bx=new THREE3.Box3().setFromObject(m); const sz=new THREE3.Vector3(); bx.getSize(sz);
+  console.log('SCAN',SCAN_URL,'axes mm=',sz.x.toFixed(0),sz.y.toFixed(0),sz.z.toFixed(0),'ovalXZ=',(sz.x/sz.z).toFixed(2));
+}, undefined, err=>{console.log('tripo load err',err&&err.message);});
+window.ufoMode=(mode)=>{                             // 'scan' | 'param' — переключатель
+  const scan=mode==='scan';
+  if(ufoTripo)ufoTripo.visible=scan;
+  ufoShell.visible=!scan; ufoSeat.visible=!scan; ufoRim.visible=!scan;
+  curTilt3=scan?0:TILT3;
+  recompute3();
+};
+// ползунки конфигуратора Mavimat
+window.ufoSet=(k,val)=>{
+  const v=+val;
+  if(k==='D'){uR=v*10/2; document.getElementById('u_vD').textContent=v+' см';}
+  if(k==='T'){uThick=v*10; document.getElementById('u_vT').textContent=v+' см';}
+  if(k==='S'){uOpen=v*10/2; document.getElementById('u_vS').textContent=v+' см';}
+  if(k==='B'){uSeatDepth=v*10; document.getElementById('u_vB').textContent=v+' см';}
+  buildUfo();
+};
+pose3();
+let anim3=null;
+window.rock3=()=>{if(anim3){cancelAnimationFrame(anim3);anim3=null;return;}(function a(){azim3+=0.012;pose3();anim3=requestAnimationFrame(a);})();};
+let rx3=0.82, ry3=0.5, dist3=3200;
+window.setZoom3=(v)=>{dist3=+v;upd3();};
+function upd3(){const cx=Math.sin(ry3)*Math.cos(rx3)*dist3, cy=Math.sin(rx3)*dist3+ctrY3, cz=Math.cos(ry3)*Math.cos(rx3)*dist3; cam3.position.set(cx,cy,cz); cam3.lookAt(0,ctrY3,0);}
+window.__upd3=upd3;
+window.v3=(v)=>{if(v==='side'){rx3=0.05;ry3=0;}else if(v==='front'){rx3=0.05;ry3=Math.PI/2;}else if(v==='top'){rx3=1.25;ry3=0;}else{rx3=0.82;ry3=0.5;}upd3();};   // iso ≈ вид сверху-сбоку на сиденье (кожа + чаша видны)
+function rs3(){const w=cv3.clientWidth,h=cv3.clientHeight;rnd3.setSize(w,h,false);cam3.aspect=w/h;cam3.updateProjectionMatrix();upd3();}
+let dn3=false,qx,qy;
+cv3.addEventListener('pointerdown',e=>{dn3=true;qx=e.clientX;qy=e.clientY;});
+addEventListener('pointerup',()=>dn3=false);
+addEventListener('pointermove',e=>{if(!dn3)return;ry3+=(e.clientX-qx)*0.01;rx3=Math.max(-1.3,Math.min(1.3,rx3+(e.clientY-qy)*0.01));qx=e.clientX;qy=e.clientY;upd3();});
+cv3.addEventListener('wheel',e=>{e.preventDefault();dist3*=(1+Math.sign(e.deltaY)*0.08);dist3=Math.max(1600,Math.min(9000,dist3));upd3();},{passive:false});
+let pz3=0;
+cv3.addEventListener('touchmove',e=>{if(e.touches.length===2){const t=e.touches;const dd=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);if(pz3)dist3*=pz3/dd;pz3=dd;upd3();}},{passive:false});
+cv3.addEventListener('touchend',()=>pz3=0);
+rs3(); addEventListener('resize',rs3); v3('iso');
+(function loop3(){requestAnimationFrame(loop3);rnd3.render(sc3,cam3);})();
+</script>
+
+<!-- UFO ВАРИАНТ «КОЛЬЦО САТУРНА» — рабочая копия верхнего блока (сцена THREE4, id c4) -->
+<script type="module">
+import * as THREE4 from "three";
+const cv4=document.getElementById('c4');
+const rnd4=new THREE4.WebGLRenderer({canvas:cv4,antialias:true});
+rnd4.setPixelRatio(Math.min(devicePixelRatio,2));
+const sc4=new THREE4.Scene(); sc4.background=new THREE4.Color(0xeceae4);
+const cam4=new THREE4.PerspectiveCamera(45,1,1,40000);
+sc4.add(new THREE4.HemisphereLight(0xffffff,0x8892a0,0.9));
+const d4a=new THREE4.DirectionalLight(0xffffff,0.85); d4a.position.set(700,1400,600); sc4.add(d4a);
+const d4b=new THREE4.DirectionalLight(0xffffff,0.3); d4b.position.set(-600,500,-700); sc4.add(d4b);
+const gr4=new THREE4.Mesh(new THREE4.CircleGeometry(1300,64),new THREE4.MeshStandardMaterial({color:0xd8d2c4,roughness:1}));
+gr4.rotation.x=-Math.PI/2; gr4.position.y=-1; sc4.add(gr4);
+sc4.add(new THREE4.GridHelper(2600,26,0xaa9988,0xc2bab0));
+const grp4=new THREE4.Group(); sc4.add(grp4);
+// UFO Large 170×133×96 см — вариант «кольцо Сатурна» (копия верхнего блока). Держится на хром-кольце-противовесе.
+const ZK=66.5/85;                 // план-эллипс: ширина 133 / длина 170
+const P=[]; const V=(r,z)=>P.push(new THREE4.Vector2(Math.max(0.01,r*10),z*10));
+const Req=85, zEq=28;             // экватор r=85 (→170см) на высоте 28 — ПЛОСКАЯ линза
+for(let i=0;i<=24;i++){const t=i/24; V(Req*Math.sin(t*Math.PI/2), zEq*(1-Math.cos(t*Math.PI/2)));} // низ-купол
+V(83,32);                                                                                          // острый обод
+for(let i=1;i<=18;i++){const t=i/18; V(83*(1-t), 32-(32-13)*Math.sin(t*Math.PI/2));}               // сиденье-чаша до центра
+const shellGeo=new THREE4.LatheGeometry(P,120); shellGeo.computeVertexNormals();
+const shell=new THREE4.Mesh(shellGeo,new THREE4.MeshStandardMaterial({color:0x101216,roughness:0.22,metalness:0.15,side:THREE4.DoubleSide}));
+shell.scale.z=ZK; grp4.add(shell);
+// КОЛЬЦО САТУРНА — хром-кольцо-противовес по экватору (на нём балансирует кресло)
+const chrome=new THREE4.Mesh(new THREE4.TorusGeometry(Req*10-7,9,16,140),new THREE4.MeshStandardMaterial({color:0xc9ccd2,roughness:0.1,metalness:1.0}));
+chrome.rotation.x=-Math.PI/2; chrome.scale.z=ZK; chrome.position.y=zEq*10; grp4.add(chrome);
+// МЯГКОЕ СИДЕНЬЕ (чёрная кожа): валик-губа по краю + центр-подушка
+const leather=new THREE4.MeshStandardMaterial({color:0x1a1b20,roughness:0.8,metalness:0.0});
+const bolster=new THREE4.Mesh(new THREE4.TorusGeometry(600,120,20,96),leather);
+bolster.rotation.x=-Math.PI/2; bolster.scale.z=ZK; bolster.position.y=300; grp4.add(bolster);
+const pad=new THREE4.Mesh(new THREE4.SphereGeometry(1,56,36),leather);
+pad.scale.set(470,80,470*ZK); pad.position.y=175; grp4.add(pad);
+// КАЧАНИЕ
+grp4.rotation.order='YXZ';
+grp4.rotation.set(0,0,0); grp4.updateMatrixWorld(true);
+const bb0=new THREE4.Box3().setFromObject(grp4);
+const TILT4=0.42;
+function liftFor4(){const q=new THREE4.Quaternion().setFromEuler(new THREE4.Euler(TILT4,0,0,'YXZ'));let m=Infinity;const v=new THREE4.Vector3();for(const x of[bb0.min.x,bb0.max.x])for(const y of[bb0.min.y,bb0.max.y])for(const z of[bb0.min.z,bb0.max.z]){v.set(x,y,z).applyQuaternion(q);if(v.y<m)m=v.y;}return -m;}
+const baseLift4=liftFor4(); let azim4=0;
+function pose4(){grp4.rotation.set(TILT4,azim4,0); grp4.position.y=baseLift4;}
+pose4();
+let anim4=null;
+window.rock4=()=>{if(anim4){cancelAnimationFrame(anim4);anim4=null;return;}(function a(){azim4+=0.012;pose4();anim4=requestAnimationFrame(a);})();};
+const midY4=230;
+let rx4=0.12, ry4=0.7, dist4=3200;
+window.setZoom4=(v)=>{dist4=+v;upd4();};
+function upd4(){const cx=Math.sin(ry4)*Math.cos(rx4)*dist4, cy=Math.sin(rx4)*dist4+midY4, cz=Math.cos(ry4)*Math.cos(rx4)*dist4; cam4.position.set(cx,cy,cz); cam4.lookAt(0,midY4,0);}
+window.v4=(v)=>{if(v==='side'){rx4=0.05;ry4=0;}else if(v==='front'){rx4=0.05;ry4=Math.PI/2;}else if(v==='top'){rx4=1.25;ry4=0;}else{rx4=0.2;ry4=0.7;}upd4();};
+function rs4(){const w=cv4.clientWidth,h=cv4.clientHeight;rnd4.setSize(w,h,false);cam4.aspect=w/h;cam4.updateProjectionMatrix();upd4();}
+let dn4=false,qx,qy;
+cv4.addEventListener('pointerdown',e=>{dn4=true;qx=e.clientX;qy=e.clientY;});
+addEventListener('pointerup',()=>dn4=false);
+addEventListener('pointermove',e=>{if(!dn4)return;ry4+=(e.clientX-qx)*0.01;rx4=Math.max(-1.3,Math.min(1.3,rx4+(e.clientY-qy)*0.01));qx=e.clientX;qy=e.clientY;upd4();});
+cv4.addEventListener('wheel',e=>{e.preventDefault();dist4*=(1+Math.sign(e.deltaY)*0.08);dist4=Math.max(1600,Math.min(9000,dist4));upd4();},{passive:false});
+let pz4=0;
+cv4.addEventListener('touchmove',e=>{if(e.touches.length===2){const t=e.touches;const dd=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);if(pz4)dist4*=pz4/dd;pz4=dd;upd4();}},{passive:false});
+cv4.addEventListener('touchend',()=>pz4=0);
+rs4(); addEventListener('resize',rs4); v4('iso');
+(function loop4(){requestAnimationFrame(loop4);rnd4.render(sc4,cam4);})();
+</script>
+
+<!-- ЛАЙТБОКС для фото-эталонов (клик → крупно, стрелки листают, ✕/ESC/клик мимо → назад к 3D) -->
+<div id="lb" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,10,12,.92);align-items:center;justify-content:center">
+  <img id="lbimg" style="max-width:92vw;max-height:88vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.6)">
+  <button id="lbx" title="Закрыть (Esc)" style="position:absolute;top:16px;right:20px;width:46px;height:46px;border:none;border-radius:50%;background:#fff;color:#222;font-size:24px;cursor:pointer;line-height:1">✕</button>
+  <button id="lbp" title="Назад (←)" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);width:52px;height:52px;border:none;border-radius:50%;background:rgba(255,255,255,.9);color:#222;font-size:28px;cursor:pointer">‹</button>
+  <button id="lbn" title="Вперёд (→)" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);width:52px;height:52px;border:none;border-radius:50%;background:rgba(255,255,255,.9);color:#222;font-size:28px;cursor:pointer">›</button>
+  <div id="lbc" style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#fff;font:14px/1 system-ui;background:rgba(0,0,0,.5);padding:6px 12px;border-radius:20px"></div>
+</div>
+<script>
+(function(){
+  const lb=document.getElementById('lb'),img=document.getElementById('lbimg'),ctr=document.getElementById('lbc');
+  let list=[],idx=0;
+  function show(){img.src=list[idx];ctr.textContent=(idx+1)+' / '+list.length;}
+  function open(strip,el){list=[...strip.querySelectorAll('img.ref')].map(i=>i.src);idx=list.indexOf(el.src);if(idx<0)idx=0;lb.style.display='flex';show();}
+  function close(){lb.style.display='none';img.src='';}
+  function step(d){idx=(idx+d+list.length)%list.length;show();}
+  document.querySelectorAll('.refstrip').forEach(strip=>{
+    strip.addEventListener('click',e=>{const t=e.target;if(t.classList.contains('ref'))open(strip,t);});
+  });
+  window.galScroll=(btn,dir)=>{const strip=btn.parentElement.querySelector('.refstrip');strip.scrollBy({left:dir*strip.clientWidth*0.8,behavior:'smooth'});};
+  document.getElementById('lbx').onclick=close;
+  document.getElementById('lbp').onclick=e=>{e.stopPropagation();step(-1);};
+  document.getElementById('lbn').onclick=e=>{e.stopPropagation();step(1);};
+  lb.addEventListener('click',e=>{if(e.target===lb)close();});
+  addEventListener('keydown',e=>{if(lb.style.display==='none')return;if(e.key==='Escape')close();else if(e.key==='ArrowLeft')step(-1);else if(e.key==='ArrowRight')step(1);});
+})();
+</script>
+
+<!-- ===== НАРЕЗКА ПЕНОПЛАСТА: MAVIMATT LARGE 1:1 ===== -->
+<script>
+(function(){
+  // Профиль ИЗМЕРЕН ПО СКАНУ off-08 (фиолетовое кресло, ОДИНОЧНОЕ, БЕЗ ковра — чистый замер), метод John.
+  // PCA 1.02M точек, 28 полос по высоте, СЕКТОР-МЕТОД (36 секторов): наруж. стенка = медиана max-радиуса
+  // по секторам, ВНУТР. стенка каверны = медиана min-радиуса. Масштаб f=665/0.48 (обод→Ø133), высота 579 мм.
+  // Обод Ø133 на 70% высоты. Сиденье ШИРОКОЕ (замер 3D-проекции): устье-обод Ø103, кожа Ø94 = 91% устья, концентрично. z снизу вверх, мм.
+  const MZ =[ 12, 29, 52, 75, 93,116,133,156,174,197,220,237,261,278,301,319,342,365,382,405,428,451,463,486,510,527,550,567];
+  const MR =[179,253,307,352,393,427,457,488,515,537,554,571,585,598,613,625,637,650,661,665,650,628,604,585,552,516,483,437]; // наруж. радиус (замер off-08, твёрдо)
+  // ВНУТР. стенка каверны-сиденья. Скан off-08 занизил устье до Ø66 (поймал подушку) — ОТБРОШЕНО.
+  // Ширина сиденья ОТКАЛИБРОВАНА ПО ФОТО реального кресла относительно обода Ø133: устье ~Ø100 (75% обода,
+  // сходится с замером верх. губы оболочки Ø102 в осевом разрезе), рим тонкий у губы (~5см) → толстый ниже, ямка сужается ко дну.
+  const MRi=[  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,130,175,230,270,315,360,395,430,455,475,488,498,495,475,435,380]; // 0=сплошной низ
+  const Hmm=579;                 // толщина 58 см — ЧИСТЫЙ замер off-08 (сектор-метод; off-09 занижал до 45 из-за ковра)
+  const seatFloor=278;           // каверна открывается на 48% высоты (замер): ниже — сплошные диски-купол, выше — кольца
+  const layerH=50.8;             // лист 2 дюйма
+  const SHEET_W=1200, SHEET_H=600, GAP=20; // лист 120×60 см, зазор реза
+  const BOUGHT=24;
+
+  function interp(x,xs,ys){
+    if(x<=xs[0])return ys[0];
+    if(x>=xs[xs.length-1])return ys[ys.length-1];
+    for(let i=1;i<xs.length;i++){if(x<=xs[i]){const t=(x-xs[i-1])/(xs[i]-xs[i-1]);return ys[i-1]+t*(ys[i]-ys[i-1]);}}
+    return ys[ys.length-1];
+  }
+  const innerAt=z=>2*interp(z,MZ,MRi); // ЗАМЕРЕННЫЙ внутр. Ø каверны, мм (0 = сплошной низ)
+
+  function build(){
+    const nLayers=Math.round(Hmm/layerH); // 12
+    // таблица + слои
+    let rows='<tr><th>Слой</th><th>выс, см</th><th>наруж. Ø</th><th>внутр. Ø</th><th>тип</th></tr>';
+    const layers=[];
+    for(let i=0;i<=nLayers;i++){
+      const zc=Math.min(i*layerH,Hmm);
+      const outer=2*interp(zc,MZ,MR); // мм
+      let inner=0, type='диск', wall='—';
+      if(zc>=seatFloor){ inner=innerAt(zc); const w=(outer-inner)/2; type='кольцо'; wall='ст.'+(w/10).toFixed(0)+'см'; }
+      layers.push({i,outer,inner});
+      rows+=`<tr class="${type==='диск'?'disk':'ring'}"><td>${i}</td><td>${(zc/10).toFixed(0)}</td><td>Ø${(outer/10).toFixed(0)}</td><td>${inner>0?'Ø'+(inner/10).toFixed(0):'—'}</td><td>${type==='диск'?'диск':wall}</td></tr>`;
+    }
+    document.getElementById('tblM').innerHTML=rows;
+
+    const maxO=Math.max(...layers.map(L=>L.outer))/10;
+    document.getElementById('statsM').innerHTML=
+      `<span class="chip">Обод: <b>Ø133 см</b> (на 70% высоты)</span>`+
+      `<span class="chip">Толщина: <b>58 см</b> (замер off-08)</span>`+
+      `<span class="chip">Сиденье: устье <b>Ø103</b>, кожа <b>Ø94</b> (91% устья), нахлёст ~5см</span>`+
+      `<span class="chip">Слоёв: <b>${nLayers}</b> (${nLayers+1} заготовок)</span>`+
+      `<span class="chip">Шире всего: <b>Ø${maxO.toFixed(0)} см</b></span>`;
+
+    drawFlat(nLayers);
+    drawTop(layers);
+    drawNest(layers);
+  }
+
+  // Вид СВЕРХУ (ЗАМЕР off-08, концентрично, в СМ): макс.ширина линзы Ø133 (экватор),
+  // устье-обод Ø103 (что видно сверху), кожа-сиденье Ø94 = 91% устья. Нахлёст обода ~5 см РОВНЫЙ.
+  const D_EQU=133, D_LIP=103, D_SEAT=94; // см — замер по 3D-проекции off-08
+  let seatOff=25;                        // мм — смещение сиденья ВНИЗ/вперёд (скан=0; фото≈25мм). Ползунок подгоняет.
+  window.setSeatOff=(v)=>{seatOff=+v*10; const el=document.getElementById('u_vO'); if(el)el.textContent=(+v).toFixed(1)+' см'; build();};
+  function drawTop(layers){
+    const cv=document.getElementById('topM'), ctx=cv.getContext('2d');
+    const Wc=cv.width, Hc=cv.height; ctx.clearRect(0,0,Wc,Hc);
+    const cx=Wc/2, cy=Hc/2-6, pad=52;
+    const sc=(Math.min(Wc,Hc)-2*pad)/D_EQU;   // px на см
+    const oy=seatOff/10*sc;                    // смещение сиденья вниз, px
+    // сетка 10 см
+    ctx.strokeStyle='#eee';ctx.lineWidth=1;ctx.font='10px Arial';ctx.fillStyle='#bbb';ctx.textAlign='center';
+    for(let g=-60;g<=60;g+=10){ const x=cx+g*sc; ctx.beginPath();ctx.moveTo(x,pad);ctx.lineTo(x,Hc-pad);ctx.stroke(); if(g)ctx.fillText(g,x,Hc-pad+12);
+      const y=cy+g*sc; ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(Wc-pad,y);ctx.stroke(); }
+    const ring=(d,col,lw,fill,cyy)=>{ ctx.beginPath();ctx.arc(cx,cyy,d/2*sc,0,7);
+      if(fill){ctx.fillStyle=fill;ctx.fill();}
+      ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.stroke(); };
+    ring(D_EQU,'#9aa','2','rgba(150,160,170,.10)',cy);         // экватор (макс.ширина)
+    ring(D_LIP,'#1f6f78','3.4','rgba(220,238,240,.35)',cy);    // устье-обод (по центру)
+    ring(D_SEAT,'#c0392b','3.4','rgba(224,90,70,.16)',cy+oy);  // кожа-сиденье (смещено вниз)
+    // нахлёст обода сверху и снизу (в см)
+    const topGap=((D_LIP-D_SEAT)/2 - seatOff/10);   // см сверху (уменьшается при смещении вниз)
+    const botGap=((D_LIP-D_SEAT)/2 + seatOff/10);   // см снизу
+    ctx.strokeStyle='#333';ctx.fillStyle='#333';ctx.lineWidth=1.4;ctx.font='bold 12px Arial';ctx.textAlign='center';
+    const yTop0=cy+oy-D_SEAT/2*sc, yTop1=cy-D_LIP/2*sc;   // верхний нахлёст
+    ctx.beginPath();ctx.moveTo(cx,yTop0);ctx.lineTo(cx,yTop1);ctx.stroke();
+    ctx.fillText('верх '+topGap.toFixed(1)+'см',cx,yTop1-4);
+    const yBot0=cy+D_LIP/2*sc, yBot1=cy+oy+D_SEAT/2*sc;   // нижний нахлёст
+    ctx.beginPath();ctx.moveTo(cx,yBot1);ctx.lineTo(cx,yBot0);ctx.stroke();
+    ctx.fillText('низ '+botGap.toFixed(1)+'см',cx,yBot0+16);
+    ctx.fillStyle='#9aa';ctx.fillText('Ø'+D_EQU,cx,cy-D_EQU/2*sc-16);
+    ctx.fillStyle='#1f6f78';ctx.fillText('устье Ø'+D_LIP,cx-D_LIP/3*sc,cy-D_LIP/2*sc+16);
+    ctx.fillStyle='#c0392b';ctx.fillText('кожа Ø'+D_SEAT+' ('+Math.round(100*D_SEAT/D_LIP)+'%)',cx,cy+oy+4);
+    ctx.fillStyle='#2c3e6b';ctx.font='bold 12px Arial';
+    ctx.fillText('ВИД СВЕРХУ (см): сиденье Ø94 смещено вниз на '+(seatOff/10).toFixed(1)+'см (нахлёст верх '+topGap.toFixed(1)+' / низ '+botGap.toFixed(1)+')',cx,Hc-8);
+    ctx.textAlign='left';
+  }
+
+  function drawFlat(nLayers){
+    const cv=document.getElementById('flatM'), ctx=cv.getContext('2d');
+    const Wc=cv.width, Hc=cv.height; ctx.clearRect(0,0,Wc,Hc);
+    const maxR=Math.max(...MR), pad=46;
+    const sc=Math.min((Wc/2-pad)/maxR,(Hc-2*pad)/Hmm);
+    const cx=Wc/2, baseY=Hc-pad;
+    for(let i=0;i<nLayers;i++){
+      const z0=i*layerH,z1=(i+1)*layerH;
+      const y0=baseY-z0*sc,y1=baseY-z1*sc;
+      const rA=interp(z0,MZ,MR),rB=interp(z1,MZ,MR);
+      const isDisk=z0<seatFloor;
+      ctx.fillStyle=isDisk?'#dceef0':'#e2ddd2';
+      if(isDisk){
+        ctx.beginPath();ctx.moveTo(cx-rA*sc,y0);ctx.lineTo(cx+rA*sc,y0);ctx.lineTo(cx+rB*sc,y1);ctx.lineTo(cx-rB*sc,y1);ctx.closePath();ctx.fill();
+      }else{
+        const iA=interp(z0,MZ,MRi),iB=interp(z1,MZ,MRi); // ЗАМЕРЕННАЯ внутр. стенка каверны
+        const off=seatOff*sc;                            // каверна смещена влево → левая стенка тоньше
+        ctx.beginPath();ctx.moveTo(cx-off+iA*sc,y0);ctx.lineTo(cx+rA*sc,y0);ctx.lineTo(cx+rB*sc,y1);ctx.lineTo(cx-off+iB*sc,y1);ctx.closePath();ctx.fill();
+        ctx.beginPath();ctx.moveTo(cx-off-iA*sc,y0);ctx.lineTo(cx-rA*sc,y0);ctx.lineTo(cx-rB*sc,y1);ctx.lineTo(cx-off-iB*sc,y1);ctx.closePath();ctx.fill();
+      }
+      ctx.strokeStyle='#cfc7b8';ctx.lineWidth=0.5;ctx.strokeRect(cx-rA*sc,y1,2*rA*sc,(y0-y1));
+      ctx.fillStyle='#c0392b';ctx.font='bold 10px Arial';ctx.fillText(i,cx+rA*sc+4,(y0+y1)/2+3);
+    }
+    // наружный контур (бирюза)
+    ctx.strokeStyle='#1f6f78';ctx.lineWidth=2.4;
+    [1,-1].forEach(s=>{ctx.beginPath();MZ.forEach((z,i)=>{const x=cx+s*MR[i]*sc,y=baseY-z*sc;i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();});
+    // полость сиденья (красный пунктир) — смещена влево на seatOff
+    ctx.strokeStyle='#c0392b';ctx.lineWidth=1.4;ctx.setLineDash([5,4]);
+    const offF=seatOff*sc;
+    [1,-1].forEach(s=>{ctx.beginPath();let st=false;for(let z=seatFloor;z<=Hmm;z+=8){const ir=interp(z,MZ,MRi);if(ir<=0)continue;const x=cx-offF+s*ir*sc,y=baseY-z*sc;st?ctx.lineTo(x,y):(ctx.moveTo(x,y),st=true);}ctx.stroke();});
+    ctx.setLineDash([]);
+    // ось
+    ctx.strokeStyle='#ccc';ctx.setLineDash([4,4]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,baseY);ctx.lineTo(cx,baseY-Hmm*sc);ctx.stroke();ctx.setLineDash([]);
+    // размеры
+    const Htop=baseY-Hmm*sc, rtop=interp(Hmm,MZ,MR);
+    const xH=cx-maxR*sc-22;
+    ctx.strokeStyle='#c0392b';ctx.fillStyle='#c0392b';ctx.lineWidth=1.3;ctx.font='bold 12px Arial';
+    ctx.beginPath();ctx.moveTo(xH,baseY);ctx.lineTo(xH,Htop);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(xH-4,baseY);ctx.lineTo(xH+4,baseY);ctx.moveTo(xH-4,Htop);ctx.lineTo(xH+4,Htop);ctx.stroke();
+    ctx.save();ctx.translate(xH-6,(baseY+Htop)/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillText('толщина 58 см',0,0);ctx.restore();
+    ctx.textAlign='center';ctx.strokeStyle='#1f6f78';ctx.fillStyle='#1f6f78';
+    const yD=Htop-14, req=maxR; // Ø max на экваторе
+    ctx.beginPath();ctx.moveTo(cx-req*sc,yD);ctx.lineTo(cx+req*sc,yD);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx-req*sc,yD-4);ctx.lineTo(cx-req*sc,yD+4);ctx.moveTo(cx+req*sc,yD-4);ctx.lineTo(cx+req*sc,yD+4);ctx.stroke();
+    ctx.fillText('Ø обод = '+(2*req/10).toFixed(0)+' см — самый широкий, СВЕРХУ',cx,yD-6);
+    ctx.fillStyle='#2c3e6b';ctx.fillText('каверна сиденья смещена влево на '+(seatOff/10).toFixed(1)+' см: левая стенка тоньше, правая толще (нахлёст обода неравный)',cx,Htop+14);
+    ctx.fillStyle='#888';ctx.fillText('низ — круглый выпуклый купол (дуга сферы), Ø36 у полюса',cx,baseY+16);
+    ctx.textAlign='left';
+  }
+
+  // Экономная раскладка: матрёшка по листам 120×60. Круг≤60→1 лист. 60–120→2 листа встык. >120→ +обод сегментами.
+  function drawNest(layers){
+    const cv=document.getElementById('nestM'), ctx=cv.getContext('2d');
+    const Wc=cv.width, Hc=cv.height; ctx.clearRect(0,0,Wc,Hc);
+    const items=layers.filter(L=>L.outer>1).map(L=>({...L,core:Math.min(L.outer,1200),over:L.outer>1200})).sort((a,b)=>b.core-a.core);
+    const used=new Array(items.length).fill(false), fields=[];
+    for(let i=0;i<items.length;i++){
+      if(used[i])continue; used[i]=true;
+      const nest=[items[i]]; let cav=items[i].inner;
+      for(let j=0;j<items.length;j++){
+        if(used[j])continue;
+        if(cav>0 && items[j].core<=cav-GAP){nest.push(items[j]);used[j]=true;cav=items[j].inner;}
+      }
+      fields.push(nest);
+    }
+    // листов на поле: если самый большой ≤60см → 1 лист, иначе 2 листа встык
+    let totalSheets=0, anyOver=false;
+    fields.forEach(f=>{ const big=Math.max(...f.map(L=>L.core)); totalSheets+=(big<=600?1:2); if(f.some(L=>L.over))anyOver=true; });
+    const n=fields.length, fw=Wc/n, field=1240;
+    const sc=Math.min((fw-16)/field,(Hc-46)/field);
+    fields.forEach((nest,fi)=>{
+      const ox=fi*fw+fw/2, oy=Hc/2-6;
+      const big=Math.max(...nest.map(L=>L.core)); const twoSheet=big>600;
+      const fh=twoSheet?1200:600;
+      if(twoSheet){
+        ctx.fillStyle='#eaf4f4';ctx.fillRect(ox-600*sc,oy-600*sc,1200*sc,600*sc);
+        ctx.fillStyle='#f4eeea';ctx.fillRect(ox-600*sc,oy,1200*sc,600*sc);
+        ctx.strokeStyle='#c0392b';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(ox-600*sc,oy);ctx.lineTo(ox+600*sc,oy);ctx.stroke();
+      }else{
+        ctx.fillStyle='#eaf4f4';ctx.fillRect(ox-600*sc,oy-300*sc,1200*sc,600*sc);
+      }
+      ctx.strokeStyle='#999';ctx.lineWidth=1;ctx.strokeRect(ox-600*sc,oy-fh/2*sc,1200*sc,fh*sc);
+      nest.forEach(L=>{
+        ctx.strokeStyle='#1f6f78';ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(ox,oy,L.core/2*sc,0,7);ctx.stroke();
+        if(L.over){ ctx.strokeStyle='#b5651d';ctx.lineWidth=1.6;ctx.setLineDash([6,4]);ctx.beginPath();ctx.arc(ox,oy,L.outer/2*sc,0,7);ctx.stroke();ctx.setLineDash([]); }
+        if(L.inner>0){ ctx.strokeStyle='#c0392b';ctx.lineWidth=1.1;ctx.setLineDash([4,3]);ctx.beginPath();ctx.arc(ox,oy,L.inner/2*sc,0,7);ctx.stroke();ctx.setLineDash([]); }
+        ctx.fillStyle='#1f6f78';ctx.font='bold 10px Arial';ctx.textAlign='center';
+        ctx.fillText('сл'+L.i+' Ø'+(L.outer/10).toFixed(0),ox,oy-L.core/2*sc+12);
+      });
+      ctx.fillStyle='#555';ctx.font='bold 11px Arial';ctx.textAlign='center';
+      ctx.fillText('Лист '+(fi+1)+(twoSheet?' (2×)':' (1)'),ox,oy+fh/2*sc+16);
+    });
+    ctx.textAlign='left';
+    document.getElementById('sheetM').innerHTML=
+      `<b>Лист 120×60 см, толщина 5,08 см (2 дюйма).</b> Копия Mavimatt Large (профиль ЗАМЕРЕН со скана off-08, сектор-метод PCA): обод Ø133, толщина 58 см, сиденье Ø94 (91% устья Ø103), ${layers.length} заготовок.<br>`+
+      `Полей раскладки: <b>${n}</b> → листов: <b>${totalSheets} шт.</b> `+
+      (totalSheets<=BOUGHT?`(у тебя 24 — хватает ✓)`:`(у тебя 24 — докупить ${totalSheets-BOUGHT})`)+
+      (anyOver?`<br><span style="color:#b5651d">⚠ Обод Ø>120 см (оранжевый пунктир, верхние кольца) — докраивается тонким кольцом-сегментами из обрезков серединок, +0 листов.</span>`:'');
+  }
+
+  build();
+})();
 </script>
 </body>
 </html>
