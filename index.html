@@ -211,7 +211,7 @@
   <!-- НАРЕЗКА ПЕНОПЛАСТА ПОД MAVIMATT LARGE (копия 1:1 по официальным размерам) -->
   <div class="card" style="border:2px solid #2c3e6b">
     <h2 style="color:#2c3e6b">Нарезка пенопласта — Mavimatt Large 1:1 (копия по официальным размерам)</h2>
-    <p style="color:#555;font-size:14px;margin:4px 0 10px">Копия <b>один-в-один</b> Mavimatt UFO Large. <b>Профиль ЗАМЕРЕН со скана off-08</b> (фиолетовое одиночное кресло, БЕЗ ковра — чистый) методом John (PCA + СЕКТОР-метод: 28 полос × 36 секторов, наруж. стенка = медиана max-радиуса, внутр. каверна = медиана min-радиуса, 1.02M точек). Форма: низ — <b>круглый выпуклый купол</b> (дуга сферы, Ø36 у полюса), радиус гладко растёт до <b>обода Ø133 см</b> (самый широкий, на ~70% высоты), затем <b>закатанный валик-рим внутрь</b>. Сиденье ШИРОКОЕ (замер по 3D-проекции off-08): устье-обод <b>Ø103</b>, кожа-сиденье <b>Ø94 = 91% устья</b> — почти весь круг, концентрично, нахлёст обода ~5 см ровный. Толщина <b>58 см</b> (чистый замер; off-09 занижал до 45 из-за прилипшего ковра). Режем из твоих листов <b>120×60 см, толщина 5,08 см (2 дюйма)</b>: низ — сплошные диски-купол, верх — кольца-чаша.</p>
+    <p style="color:#555;font-size:14px;margin:4px 0 10px">Копия <b>один-в-один</b> Mavimatt UFO Large. <b>Профиль ЗАМЕРЕН со скана off-08</b> (фиолетовое одиночное кресло, БЕЗ ковра — чистый) методом John (PCA + СЕКТОР-метод: 28 полос × 36 секторов, наруж. стенка = медиана max-радиуса, внутр. каверна = медиана min-радиуса, 1.02M точек). Форма: низ — <b>круглый выпуклый купол</b> (дуга сферы, Ø36 у полюса), радиус гладко растёт до <b>обода Ø133 см</b> (самый широкий, на ~70% высоты), затем <b>закатанный валик-рим внутрь</b>. Сиденье: устье-обод-валик <b>Ø103</b>, реальное отверстие <b>Ø59 смещено ~10 см от оси</b> (сиденье НЕ по центру). Толщина <b>56 см</b> (чистый замер; off-09 занижал до 45 из-за прилипшего ковра). Контур сбоку <b>обведён по левому и правому краю облака точек off-08 отдельно и сглажен</b> — профиль скана асимметричен (наклон+хвост), схема 1:1 совпадает с проверкой overlay-fit ниже. Режем из твоих листов <b>120×60 см, толщина 5,08 см (2 дюйма)</b>: низ — сплошные диски-купол, верх — кольца-чаша.</p>
     <div id="cutwrapM">
       <div>
         <canvas id="flatM" class="flat" width="540" height="480"></canvas>
@@ -964,12 +964,15 @@ rs4(); addEventListener('resize',rs4); v4('iso');
   // по секторам, ВНУТР. стенка каверны = медиана min-радиуса. Масштаб f=665/0.48 (обод→Ø133), высота 579 мм.
   // Обод Ø133 на 70% высоты. Сиденье ШИРОКОЕ (замер 3D-проекции): устье-обод Ø103, кожа Ø94 = 91% устья, концентрично. z снизу вверх, мм.
   const MZ =[ 12, 29, 52, 75, 93,116,133,156,174,197,220,237,261,278,301,319,342,365,382,405,428,451,463,486,510,527,550,567];
-  const MR =[212,273,351,397,429,465,487,516,535,559,580,593,606,613,621,626,637,652,663,665,653,621,603,576,565,557,543,530]; // наруж. радиус ОБВЕДЁН по точкам скана off-08 (внешняя огибающая, рим-скосы совпадают ±2см)
+  // ЛЕВЫЙ и ПРАВЫЙ край ОБВЕДЕНЫ по точкам скана off-08 отдельно + СГЛАЖЕНЫ (окно 5, без зубцов). Профиль скана асимметричен (наклон+хвост).
+  const MRL=[224,250,272,320,358,393,423,454,481,505,527,546,561,577,590,599,604,604,600,593,586,579,572,564,556,546,541,536]; // левый радиус, мм
+  const MRR=[228,255,276,324,362,396,426,455,481,503,522,538,553,567,582,597,610,617,613,597,573,539,506,479,460,436,429,422]; // правый радиус, мм
+  const MR =MRL.map((l,i)=>Math.round((l+MRR[i])/2)); // средний радиус — для КРУГЛОЙ нарезки (слои/раскладка круглые)
   // ВНУТР. стенка каверны-сиденья. Скан off-08 занизил устье до Ø66 (поймал подушку) — ОТБРОШЕНО.
   // Ширина сиденья ОТКАЛИБРОВАНА ПО ФОТО реального кресла относительно обода Ø133: устье ~Ø100 (75% обода,
   // сходится с замером верх. губы оболочки Ø102 в осевом разрезе), рим тонкий у губы (~5см) → толстый ниже, ямка сужается ко дну.
   const MRi=[  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,133,177,221,258,282,312,339,364,376,399,421,436,456,470]; // гладкая чаша-сиденье: дно 27.8см, устье R47, стенка верха 6см (проектная, каверну со скана снять нельзя — шум) // 0=сплошной низ
-  const Hmm=579;                 // толщина 58 см — ЧИСТЫЙ замер off-08 (сектор-метод; off-09 занижал до 45 из-за ковра)
+  const Hmm=564;                 // толщина 56 см — ЧИСТЫЙ замер off-08 (сектор-метод; off-09 занижал до 45 из-за ковра)
   const seatFloor=278;           // каверна открывается на 48% высоты (замер): ниже — сплошные диски-купол, выше — кольца
   const layerH=50.8;             // лист 2 дюйма
   const SHEET_W=1200, SHEET_H=600, GAP=20; // лист 120×60 см, зазор реза
@@ -1001,7 +1004,7 @@ rs4(); addEventListener('resize',rs4); v4('iso');
     const maxO=Math.max(...layers.map(L=>L.outer))/10;
     document.getElementById('statsM').innerHTML=
       `<span class="chip">Обод: <b>Ø133 см</b> (на 70% высоты)</span>`+
-      `<span class="chip">Толщина: <b>58 см</b> (замер off-08)</span>`+
+      `<span class="chip">Толщина: <b>56 см</b> (замер off-08)</span>`+
       `<span class="chip">Сиденье: обод-валик <b>Ø103</b>, отверстие <b>Ø59</b> смещено ~10см от оси</span>`+
       `<span class="chip">Слоёв: <b>${nLayers}</b> (${nLayers+1} заготовок)</span>`+
       `<span class="chip">Шире всего: <b>Ø${maxO.toFixed(0)} см</b></span>`;
@@ -1054,29 +1057,33 @@ rs4(); addEventListener('resize',rs4); v4('iso');
   function drawFlat(nLayers){
     const cv=document.getElementById('flatM'), ctx=cv.getContext('2d');
     const Wc=cv.width, Hc=cv.height; ctx.clearRect(0,0,Wc,Hc);
-    const maxR=Math.max(...MR), pad=46;
+    const maxR=Math.max(...MRL,...MRR), pad=46;
     const sc=Math.min((Wc/2-pad)/maxR,(Hc-2*pad)/Hmm);
     const cx=Wc/2, baseY=Hc-pad;
     for(let i=0;i<nLayers;i++){
       const z0=i*layerH,z1=(i+1)*layerH;
       const y0=baseY-z0*sc,y1=baseY-z1*sc;
-      const rA=interp(z0,MZ,MR),rB=interp(z1,MZ,MR);
+      const lA=interp(z0,MZ,MRL),lB=interp(z1,MZ,MRL); // левый край (по облаку)
+      const rA=interp(z0,MZ,MRR),rB=interp(z1,MZ,MRR); // правый край (по облаку)
       const isDisk=z0<seatFloor;
       ctx.fillStyle=isDisk?'#dceef0':'#e2ddd2';
       if(isDisk){
-        ctx.beginPath();ctx.moveTo(cx-rA*sc,y0);ctx.lineTo(cx+rA*sc,y0);ctx.lineTo(cx+rB*sc,y1);ctx.lineTo(cx-rB*sc,y1);ctx.closePath();ctx.fill();
+        ctx.beginPath();ctx.moveTo(cx-lA*sc,y0);ctx.lineTo(cx+rA*sc,y0);ctx.lineTo(cx+rB*sc,y1);ctx.lineTo(cx-lB*sc,y1);ctx.closePath();ctx.fill();
       }else{
         const iA=interp(z0,MZ,MRi),iB=interp(z1,MZ,MRi); // ЗАМЕРЕННАЯ внутр. стенка каверны
         const off=seatOff*sc;                            // каверна смещена влево → левая стенка тоньше
         ctx.beginPath();ctx.moveTo(cx-off+iA*sc,y0);ctx.lineTo(cx+rA*sc,y0);ctx.lineTo(cx+rB*sc,y1);ctx.lineTo(cx-off+iB*sc,y1);ctx.closePath();ctx.fill();
-        ctx.beginPath();ctx.moveTo(cx-off-iA*sc,y0);ctx.lineTo(cx-rA*sc,y0);ctx.lineTo(cx-rB*sc,y1);ctx.lineTo(cx-off-iB*sc,y1);ctx.closePath();ctx.fill();
+        ctx.beginPath();ctx.moveTo(cx-off-iA*sc,y0);ctx.lineTo(cx-lA*sc,y0);ctx.lineTo(cx-lB*sc,y1);ctx.lineTo(cx-off-iB*sc,y1);ctx.closePath();ctx.fill();
       }
-      ctx.strokeStyle='#cfc7b8';ctx.lineWidth=0.5;ctx.strokeRect(cx-rA*sc,y1,2*rA*sc,(y0-y1));
+      ctx.strokeStyle='#cfc7b8';ctx.lineWidth=0.5;
+      ctx.beginPath();ctx.moveTo(cx-lA*sc,y0);ctx.lineTo(cx+rA*sc,y0);ctx.lineTo(cx+rB*sc,y1);ctx.lineTo(cx-lB*sc,y1);ctx.closePath();ctx.stroke();
       ctx.fillStyle='#c0392b';ctx.font='bold 10px Arial';ctx.fillText(i,cx+rA*sc+4,(y0+y1)/2+3);
     }
-    // наружный контур (бирюза)
+    // наружный контур (бирюза) — ЛЕВЫЙ и ПРАВЫЙ край облака отдельно (как overlay-fit), гладкий
     ctx.strokeStyle='#1f6f78';ctx.lineWidth=2.4;
-    [1,-1].forEach(s=>{ctx.beginPath();MZ.forEach((z,i)=>{const x=cx+s*MR[i]*sc,y=baseY-z*sc;i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();});
+    ctx.beginPath();MZ.forEach((z,i)=>{const x=cx-MRL[i]*sc,y=baseY-z*sc;i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
+    ctx.beginPath();MZ.forEach((z,i)=>{const x=cx+MRR[i]*sc,y=baseY-z*sc;i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx-MRL[0]*sc,baseY-MZ[0]*sc);ctx.lineTo(cx+MRR[0]*sc,baseY-MZ[0]*sc);ctx.stroke(); // замкнуть низ
     // полость сиденья (красный пунктир) — смещена влево на seatOff
     ctx.strokeStyle='#c0392b';ctx.lineWidth=1.4;ctx.setLineDash([5,4]);
     const offF=seatOff*sc;
@@ -1090,12 +1097,12 @@ rs4(); addEventListener('resize',rs4); v4('iso');
     ctx.strokeStyle='#c0392b';ctx.fillStyle='#c0392b';ctx.lineWidth=1.3;ctx.font='bold 12px Arial';
     ctx.beginPath();ctx.moveTo(xH,baseY);ctx.lineTo(xH,Htop);ctx.stroke();
     ctx.beginPath();ctx.moveTo(xH-4,baseY);ctx.lineTo(xH+4,baseY);ctx.moveTo(xH-4,Htop);ctx.lineTo(xH+4,Htop);ctx.stroke();
-    ctx.save();ctx.translate(xH-6,(baseY+Htop)/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillText('толщина 58 см',0,0);ctx.restore();
+    ctx.save();ctx.translate(xH-6,(baseY+Htop)/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillText('толщина 56 см',0,0);ctx.restore();
     ctx.textAlign='center';ctx.strokeStyle='#1f6f78';ctx.fillStyle='#1f6f78';
-    const yD=Htop-14, req=maxR; // Ø max на экваторе
-    ctx.beginPath();ctx.moveTo(cx-req*sc,yD);ctx.lineTo(cx+req*sc,yD);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(cx-req*sc,yD-4);ctx.lineTo(cx-req*sc,yD+4);ctx.moveTo(cx+req*sc,yD-4);ctx.lineTo(cx+req*sc,yD+4);ctx.stroke();
-    ctx.fillText('Ø обод = '+(2*req/10).toFixed(0)+' см — самый широкий, СВЕРХУ',cx,yD-6);
+    const mL=Math.max(...MRL), mR=Math.max(...MRR), yD=Htop-14; // фактическая макс.ширина по краям облака
+    ctx.beginPath();ctx.moveTo(cx-mL*sc,yD);ctx.lineTo(cx+mR*sc,yD);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx-mL*sc,yD-4);ctx.lineTo(cx-mL*sc,yD+4);ctx.moveTo(cx+mR*sc,yD-4);ctx.lineTo(cx+mR*sc,yD+4);ctx.stroke();
+    ctx.fillText('Ø обод = '+((mL+mR)/10).toFixed(0)+' см — самый широкий, СВЕРХУ',cx,yD-6);
     ctx.fillStyle='#2c3e6b';ctx.fillText('каверна сиденья смещена влево на '+(seatOff/10).toFixed(1)+' см: левая стенка тоньше, правая толще (нахлёст обода неравный)',cx,Htop+14);
     ctx.fillStyle='#888';ctx.fillText('низ — круглый выпуклый купол (дуга сферы), Ø36 у полюса',cx,baseY+16);
     ctx.textAlign='left';
