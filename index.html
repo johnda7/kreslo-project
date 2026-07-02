@@ -219,7 +219,7 @@
       </div>
       <div>
         <canvas id="topM" class="flat" width="540" height="480"></canvas>
-        <div class="note">Вид <b>СВЕРХУ</b> в СМ (замер off-08, концентрично). <b>Серый</b> Ø133 — макс.ширина линзы (экватор). <b>Бирюза</b> Ø103 — устье-обод (что видно сверху). <b>Красный</b> Ø94 — кожа-сиденье = <b>91% устья</b>, занимает почти весь круг. Нахлёст обода ~5 см ровный по кругу.</div>
+        <div class="note">Вид <b>СВЕРХУ</b> в СМ (замер off-08). <b>Серый</b> Ø133 — макс.ширина линзы (экватор, по центру). <b>Бирюза</b> Ø103 — устье-обод-валик (виден сверху, круглый, по центру). <b>Красный</b> Ø59 — реальное отверстие сиденья, <b>СМЕЩЕНО от оси ~10 см</b> (сиденье НЕ по центру — как на overlay-top). Нахлёст валика неровный: узкая сторона ~12, широкая ~32 см.</div>
       </div>
     </div>
     <h2 style="margin:16px 0 0;font-size:14px;color:#c0392b">Проверка 1:1 — контур обведён по реальным точкам скана off-08 (не выдумано)</h2>
@@ -235,10 +235,10 @@
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin:10px 0 2px;padding:8px 12px;background:#f3f1ea;border-radius:8px;flex-wrap:wrap">
-      <span style="font-size:13px;color:#2c3e6b;font-weight:600">Смещение сиденья (вниз/влево):</span>
-      <input id="seatOffSl" type="range" min="0" max="6" step="0.5" value="2.5" oninput="setSeatOff(this.value)" style="flex:1;min-width:180px;max-width:320px">
-      <b id="u_vO" style="color:#c0392b;font-size:13px;min-width:56px">2.5 см</b>
-      <span style="font-size:11px;color:#888">скан off-08 = 0 (концентрично); подгони под то, что видишь на реальном кресле</span>
+      <span style="font-size:13px;color:#2c3e6b;font-weight:600">Смещение отверстия сиденья от оси:</span>
+      <input id="seatOffSl" type="range" min="0" max="15" step="0.5" value="10" oninput="setSeatOff(this.value)" style="flex:1;min-width:180px;max-width:320px">
+      <b id="u_vO" style="color:#c0392b;font-size:13px;min-width:56px">10 см</b>
+      <span style="font-size:11px;color:#888">замер overlay-top off-08 ≈ 10 см (сиденье НЕ по центру)</span>
     </div>
     <div id="cutwrap2M">
       <div style="max-height:480px;overflow:auto"><table id="tblM"></table></div>
@@ -1002,7 +1002,7 @@ rs4(); addEventListener('resize',rs4); v4('iso');
     document.getElementById('statsM').innerHTML=
       `<span class="chip">Обод: <b>Ø133 см</b> (на 70% высоты)</span>`+
       `<span class="chip">Толщина: <b>58 см</b> (замер off-08)</span>`+
-      `<span class="chip">Сиденье: устье <b>Ø103</b>, кожа <b>Ø94</b> (91% устья), нахлёст ~5см</span>`+
+      `<span class="chip">Сиденье: обод-валик <b>Ø103</b>, отверстие <b>Ø59</b> смещено ~10см от оси</span>`+
       `<span class="chip">Слоёв: <b>${nLayers}</b> (${nLayers+1} заготовок)</span>`+
       `<span class="chip">Шире всего: <b>Ø${maxO.toFixed(0)} см</b></span>`;
 
@@ -1011,10 +1011,11 @@ rs4(); addEventListener('resize',rs4); v4('iso');
     drawNest(layers);
   }
 
-  // Вид СВЕРХУ (ЗАМЕР off-08, концентрично, в СМ): макс.ширина линзы Ø133 (экватор),
-  // устье-обод Ø103 (что видно сверху), кожа-сиденье Ø94 = 91% устья. Нахлёст обода ~5 см РОВНЫЙ.
-  const D_EQU=133, D_LIP=103, D_SEAT=94; // см — замер по 3D-проекции off-08
-  let seatOff=25;                        // мм — смещение сиденья ВНИЗ/вперёд (скан=0; фото≈25мм). Ползунок подгоняет.
+  // Вид СВЕРХУ (ЗАМЕР off-08, в СМ): силуэт-экватор Ø133 (макс.ширина линзы, по центру),
+  // устье-обод-валик Ø103 (закатанный рим, виден сверху, по центру, круглый),
+  // РЕАЛЬНОЕ отверстие сиденья Ø59 — СМЕЩЕНО от оси на ~10 см (замер overlay-top off-08, сиденье НЕ по центру).
+  const D_EQU=133, D_LIP=103, D_MOUTH=59; // см — экватор / устье-обод / отверстие сиденья
+  let seatOff=100;                        // мм — смещение отверстия сиденья от оси (замер скана ≈10 см). Ползунок подстраивает.
   window.setSeatOff=(v)=>{seatOff=+v*10; const el=document.getElementById('u_vO'); if(el)el.textContent=(+v).toFixed(1)+' см'; build();};
   function drawTop(layers){
     const cv=document.getElementById('topM'), ctx=cv.getContext('2d');
@@ -1029,24 +1030,24 @@ rs4(); addEventListener('resize',rs4); v4('iso');
     const ring=(d,col,lw,fill,cyy)=>{ ctx.beginPath();ctx.arc(cx,cyy,d/2*sc,0,7);
       if(fill){ctx.fillStyle=fill;ctx.fill();}
       ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.stroke(); };
-    ring(D_EQU,'#9aa','2','rgba(150,160,170,.10)',cy);         // экватор (макс.ширина)
-    ring(D_LIP,'#1f6f78','3.4','rgba(220,238,240,.35)',cy);    // устье-обод (по центру)
-    ring(D_SEAT,'#c0392b','3.4','rgba(224,90,70,.16)',cy+oy);  // кожа-сиденье (смещено вниз)
-    // нахлёст обода сверху и снизу (в см)
-    const topGap=((D_LIP-D_SEAT)/2 - seatOff/10);   // см сверху (уменьшается при смещении вниз)
-    const botGap=((D_LIP-D_SEAT)/2 + seatOff/10);   // см снизу
+    ring(D_EQU,'#9aa','2','rgba(150,160,170,.10)',cy);          // экватор — силуэт, по центру
+    ring(D_LIP,'#1f6f78','3.4','rgba(220,238,240,.35)',cy);     // устье-обод-валик — по центру, круглый
+    ring(D_MOUTH,'#c0392b','3.4','rgba(224,90,70,.16)',cy+oy);  // отверстие сиденья — СМЕЩЕНО от оси
+    // нахлёст валика от отверстия до обода (в см): узкая сторона / широкая сторона
+    const nearGap=((D_LIP-D_MOUTH)/2 - seatOff/10);   // см — сторона куда смещено (узкая)
+    const farGap =((D_LIP-D_MOUTH)/2 + seatOff/10);   // см — противоположная (широкая)
     ctx.strokeStyle='#333';ctx.fillStyle='#333';ctx.lineWidth=1.4;ctx.font='bold 12px Arial';ctx.textAlign='center';
-    const yTop0=cy+oy-D_SEAT/2*sc, yTop1=cy-D_LIP/2*sc;   // верхний нахлёст
-    ctx.beginPath();ctx.moveTo(cx,yTop0);ctx.lineTo(cx,yTop1);ctx.stroke();
-    ctx.fillText('верх '+topGap.toFixed(1)+'см',cx,yTop1-4);
-    const yBot0=cy+D_LIP/2*sc, yBot1=cy+oy+D_SEAT/2*sc;   // нижний нахлёст
-    ctx.beginPath();ctx.moveTo(cx,yBot1);ctx.lineTo(cx,yBot0);ctx.stroke();
-    ctx.fillText('низ '+botGap.toFixed(1)+'см',cx,yBot0+16);
+    const yN0=cy+oy+D_MOUTH/2*sc, yN1=cy+D_LIP/2*sc;   // узкий нахлёст (сторона смещения)
+    ctx.beginPath();ctx.moveTo(cx,yN0);ctx.lineTo(cx,yN1);ctx.stroke();
+    ctx.fillText(nearGap.toFixed(0)+'см',cx,yN1+15);
+    const yF0=cy-D_LIP/2*sc, yF1=cy+oy-D_MOUTH/2*sc;   // широкий нахлёст (противоположная)
+    ctx.beginPath();ctx.moveTo(cx,yF0);ctx.lineTo(cx,yF1);ctx.stroke();
+    ctx.fillText(farGap.toFixed(0)+'см',cx,yF0-4);
     ctx.fillStyle='#9aa';ctx.fillText('Ø'+D_EQU,cx,cy-D_EQU/2*sc-16);
-    ctx.fillStyle='#1f6f78';ctx.fillText('устье Ø'+D_LIP,cx-D_LIP/3*sc,cy-D_LIP/2*sc+16);
-    ctx.fillStyle='#c0392b';ctx.fillText('кожа Ø'+D_SEAT+' ('+Math.round(100*D_SEAT/D_LIP)+'%)',cx,cy+oy+4);
+    ctx.fillStyle='#1f6f78';ctx.fillText('обод-валик Ø'+D_LIP,cx-D_LIP/3*sc,cy-D_LIP/2*sc-2);
+    ctx.fillStyle='#c0392b';ctx.fillText('отверстие Ø'+D_MOUTH,cx,cy+oy+4);
     ctx.fillStyle='#2c3e6b';ctx.font='bold 12px Arial';
-    ctx.fillText('ВИД СВЕРХУ (см): сиденье Ø94 смещено вниз на '+(seatOff/10).toFixed(1)+'см (нахлёст верх '+topGap.toFixed(1)+' / низ '+botGap.toFixed(1)+')',cx,Hc-8);
+    ctx.fillText('ВИД СВЕРХУ (см): отверстие Ø'+D_MOUTH+' СМЕЩЕНО от оси на '+(seatOff/10).toFixed(1)+'см (нахлёст '+nearGap.toFixed(0)+' / '+farGap.toFixed(0)+')',cx,Hc-8);
     ctx.textAlign='left';
   }
 
