@@ -3,3 +3,5 @@ __pycache__/
 .DS_Store
 models/*.glb
 !models/ufo-tripo-off08.glb
+!models/ufo-tripo-off02.glb
+!models/ufo-tripo-v2.glb
