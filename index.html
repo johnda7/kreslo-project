@@ -222,6 +222,18 @@
         <div class="note">Вид <b>СВЕРХУ</b> в СМ (замер off-08, концентрично). <b>Серый</b> Ø133 — макс.ширина линзы (экватор). <b>Бирюза</b> Ø103 — устье-обод (что видно сверху). <b>Красный</b> Ø94 — кожа-сиденье = <b>91% устья</b>, занимает почти весь круг. Нахлёст обода ~5 см ровный по кругу.</div>
       </div>
     </div>
+    <h2 style="margin:16px 0 0;font-size:14px;color:#c0392b">Проверка 1:1 — контур обведён по реальным точкам скана off-08 (не выдумано)</h2>
+    <p style="color:#555;font-size:13px;margin:4px 0 8px">Серое — реальное облако точек LiDAR/Tripo-скана off-08. Бирюза — контур, который режем. Если бирюза лежит по краю серого — форма сходится 1:1. Клик по картинке — крупно.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:300px">
+        <a href="overlay-fit.png" target="_blank"><img src="overlay-fit.png" style="width:100%;border:1px solid #cfcabf;border-radius:8px" alt="overlay side"></a>
+        <div class="note"><b>СБОКУ:</b> наружный контур обведён по левому и правому краю облака отдельно (сглажено, без зубцов).</div>
+      </div>
+      <div style="flex:1;min-width:300px">
+        <a href="overlay-top.png" target="_blank"><img src="overlay-top.png" style="width:100%;border:1px solid #cfcabf;border-radius:8px" alt="overlay top"></a>
+        <div class="note"><b>СВЕРХУ:</b> бирюза — наружный обод (круглый, по центру, Ø~130). Красный — устье-отверстие (Ø~59, <b>смещено ~10 см</b> — сиденье не по центру).</div>
+      </div>
+    </div>
     <div style="display:flex;align-items:center;gap:10px;margin:10px 0 2px;padding:8px 12px;background:#f3f1ea;border-radius:8px;flex-wrap:wrap">
       <span style="font-size:13px;color:#2c3e6b;font-weight:600">Смещение сиденья (вниз/влево):</span>
       <input id="seatOffSl" type="range" min="0" max="6" step="0.5" value="2.5" oninput="setSeatOff(this.value)" style="flex:1;min-width:180px;max-width:320px">
