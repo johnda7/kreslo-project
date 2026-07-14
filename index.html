@@ -61,6 +61,89 @@
 
 <div class="wrap">
 
+  <!-- ГАЛЕРЕЯ КРЕСЕЛ -->
+  <div class="card" style="border:2px solid #1e7a3c;background:#f2faf5">
+    <h2 style="color:#1e7a3c">📸 Галерея — все кресла проекта</h2>
+    <div id="galTabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+    <div style="position:relative;background:#111;border-radius:12px;overflow:hidden">
+      <img id="galImg" src="" alt="" style="width:100%;max-height:520px;object-fit:contain;display:block;background:#111">
+      <button onclick="galGo(-1)" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.85);border:0;border-radius:50%;width:40px;height:40px;font-size:20px;cursor:pointer">‹</button>
+      <button onclick="galGo(1)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.85);border:0;border-radius:50%;width:40px;height:40px;font-size:20px;cursor:pointer">›</button>
+      <div id="galCap" style="position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;padding:14px 12px 8px;font-size:13px"></div>
+    </div>
+    <div id="galThumbs" style="display:flex;gap:6px;overflow-x:auto;margin-top:8px;padding-bottom:4px"></div>
+  </div>
+
+  <script>
+  const GAL = {
+    'Наши рендеры': [
+      ['images/renders/01-spine-110-rocker.png','SPINE 110 ROCKER — Ø110, спинка 95–102, посадка 187 см'],
+      ['images/renders/02-ball-capsule-110.png','BALL CAPSULE 110 — узкая капсула, задний упор + передний балласт 4–8 кг'],
+      ['images/renders/03-pearl-football.png','PEARL FOOTBALL — Ø145, высота 59'],
+      ['images/renders/04-stealth-football.png','STEALTH FOOTBALL — чёрный, Ø145'],
+      ['images/renders/05-basketball-sunset.png','BASKETBALL SUNSET — Ø145'],
+      ['images/renders/06-football-110-posadka.png','Ø110 · посадка 187 см · упор сзади · глубина до упора 60'],
+    ],
+    'FONTE — разборное 🔩': [
+      ['images/fonte-ref-12.jpg','FONTE — ВИДЕН БОЛТ: спинка прикручивается к корзине'],
+      ['images/fonte-ref-10.jpg','FONTE FT-30003 · 98×100×142 см · 998 THB'],
+      ['images/fonte-ref-01.jpg','FONTE — плетение, вид сзади'],
+      ['images/fonte-ref-02.jpg','FONTE'],['images/fonte-ref-03.jpg','FONTE'],
+      ['images/fonte-ref-04.jpg','FONTE'],['images/fonte-ref-05.jpg','FONTE — корзина + подушка'],
+      ['images/fonte-ref-06.jpg','FONTE'],['images/fonte-ref-07.jpg','FONTE'],
+      ['images/fonte-ref-08.jpg','FONTE'],['images/fonte-ref-09.jpg','FONTE'],
+      ['images/fonte-ref-11.jpg','FONTE'],['images/fonte-ref-13.jpg','FONTE'],
+    ],
+    'Mavimatt UFO': [
+      ['images/mavimatt/off-01.jpg','Mavimatt UFO — официальное фото'],
+      ['images/mavimatt/off-02.jpg','Mavimatt UFO'],['images/mavimatt/off-03.jpg','Mavimatt UFO'],
+      ['images/mavimatt/off-04.jpg','Mavimatt UFO'],['images/mavimatt/off-05.jpg','Mavimatt UFO'],
+      ['images/mavimatt/off-06.jpg','Mavimatt UFO'],['images/mavimatt/off-07.jpg','Mavimatt UFO'],
+      ['images/mavimatt/off-08.jpg','Mavimatt UFO'],['images/mavimatt/off-09.jpg','Mavimatt UFO'],
+      ['images/mavimatt/off-10.jpg','Mavimatt UFO'],
+      ['images/ufo-ref-side.jpg','UFO — сбоку'],['images/ufo-ref-gold.jpg','UFO — золотой'],
+      ['images/ufo-ref-pair.jpg','UFO — пара'],['images/ufo-ref-outdoor.jpg','UFO — на улице'],
+    ],
+    'UFO вживую': [
+      ['images/ufo-real-side.jpg','UFO вживую — сбоку'],
+      ['images/ufo-real-front.jpg','UFO вживую — спереди'],
+      ['images/ufo-real-seat.jpg','UFO вживую — сиденье'],
+      ['images/ufo-real-shell.jpg','UFO вживую — оболочка'],
+      ['images/ufo-real-dome.jpg','UFO вживую — купол'],
+      ['images/ufo-real2-red-side.jpg','UFO красный — сбоку'],
+      ['images/ufo-real2-red-seat.jpg','UFO красный — сиденье'],
+      ['images/ufo-real2-red-sitting.jpg','UFO красный — посадка'],
+    ],
+    'Наше кресло': [
+      ['images/kreslo-realnoe-3vida.png','Наше кресло — 3 вида по LiDAR-скану'],
+      ['images/kreslo-skan-sravnenie.png','Скан vs цель Ø110 — сравнение профилей'],
+      ['images/posadka-final.png','Посадка под наклоном'],
+      ['images/plan-rezki.png','План нарезки'],
+      ['images/raskladka-listy.png','Раскладка на листах EPS'],
+      ['images/stopka-sloev.png','Стопка слоёв в разрезе'],
+      ['images/pole-4-5.png','Как резать кольцо'],
+    ],
+  };
+  let galCat = 'Наши рендеры', galIdx = 0;
+  function galRender(){
+    const list = GAL[galCat];
+    if(galIdx < 0) galIdx = list.length - 1;
+    if(galIdx >= list.length) galIdx = 0;
+    const [src, cap] = list[galIdx];
+    const img = document.getElementById('galImg');
+    img.src = src; img.alt = cap;
+    img.onerror = function(){ this.src = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300"><rect width="600" height="300" fill="#222"/><text x="300" y="150" fill="#888" font-size="16" text-anchor="middle">нет файла: ' + src.split("/").pop() + '</text></svg>'); };
+    document.getElementById('galCap').textContent = `${galIdx+1}/${list.length} · ${cap}`;
+    document.getElementById('galTabs').innerHTML = Object.keys(GAL).map(k =>
+      `<button onclick="galCat='${k}';galIdx=0;galRender()" style="padding:6px 12px;border-radius:16px;border:0;cursor:pointer;font-size:13px;background:${k===galCat?'#1e7a3c':'#dfe6e0'};color:${k===galCat?'#fff':'#333'}">${k} <small style="opacity:.7">${GAL[k].length}</small></button>`).join('');
+    document.getElementById('galThumbs').innerHTML = list.map((it,i) =>
+      `<img src="${it[0]}" onclick="galIdx=${i};galRender()" style="height:52px;width:72px;object-fit:cover;border-radius:5px;cursor:pointer;flex:0 0 auto;background:#ddd;outline:${i===galIdx?'3px solid #1e7a3c':'none'}" onerror="this.style.opacity=.2">`).join('');
+  }
+  function galGo(d){ galIdx += d; galRender(); }
+  document.addEventListener('keydown', e => { if(e.key==='ArrowLeft') galGo(-1); if(e.key==='ArrowRight') galGo(1); });
+  galRender();
+  </script>
+
   <!-- ПОСЛЕДНИЕ РЕНДЕРЫ — НА ЧТО ЦЕЛИМСЯ -->
   <div class="card" style="border:2px solid #2c3e6b;background:#f4f6fb">
     <h2 style="color:#2c3e6b">🎯 Последние рендеры — на что целимся</h2>
