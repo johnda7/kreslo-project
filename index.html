@@ -61,6 +61,48 @@
 
 <div class="wrap">
 
+  <!-- ПОСЛЕДНИЕ РЕНДЕРЫ — НА ЧТО ЦЕЛИМСЯ -->
+  <div class="card" style="border:2px solid #2c3e6b;background:#f4f6fb">
+    <h2 style="color:#2c3e6b">🎯 Последние рендеры — на что целимся</h2>
+
+    <p style="margin-top:0"><b>Развилка двух направлений.</b> Оба живые, выбрать надо одно:</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0">
+      <div style="background:#fff;padding:12px;border-radius:10px;border-left:4px solid #2c3e6b">
+        <b>А. Ø110 — компактный рокер</b><br>
+        <small>SPINE 110 / BALL CAPSULE 110</small>
+        <ul style="margin:8px 0;padding-left:18px;font-size:13px">
+          <li>Ø110, высота по спинке <b>95–102 см</b>, глубина до упора 60</li>
+          <li>Вес 28–35 кг · передний балласт 4–8 кг (скрыт)</li>
+          <li>Задний упор работает только в крайнем наклоне</li>
+          <li><b style="color:#1e7a3c">Решает проблему посадки:</b> голова выше обода, спина поддержана, легко вставать</li>
+        </ul>
+      </div>
+      <div style="background:#fff;padding:12px;border-radius:10px;border-left:4px solid #b8860b">
+        <b>Б. Ø145 — широкий мяч</b><br>
+        <small>PEARL / STEALTH / BASKETBALL SUNSET</small>
+        <ul style="margin:8px 0;padding-left:18px;font-size:13px">
+          <li>Ø145, высота корпуса <b>59 см</b></li>
+          <li>Эффектнее визуально, «футбольная» графика</li>
+          <li><b style="color:#c0392b">НЕ решает посадку:</b> низкое, та же проблема вставания, что у текущего кресла</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">
+      <figure style="margin:0"><img src="images/renders/01-spine-110-rocker.png" alt="SPINE 110 ROCKER" style="width:100%;border-radius:8px;display:block;background:#eceae4;min-height:80px" onerror="this.style.opacity=.25;this.alt='нет файла: 01-spine-110-rocker.png'"><figcaption style="font-size:12px;color:#666;margin-top:4px">SPINE 110 ROCKER — посадка 187 см</figcaption></figure>
+      <figure style="margin:0"><img src="images/renders/02-ball-capsule-110.png" alt="BALL CAPSULE 110" style="width:100%;border-radius:8px;display:block;background:#eceae4;min-height:80px" onerror="this.style.opacity=.25;this.alt='нет файла: 02-ball-capsule-110.png'"><figcaption style="font-size:12px;color:#666;margin-top:4px">BALL CAPSULE 110 — узкая капсула</figcaption></figure>
+      <figure style="margin:0"><img src="images/renders/03-pearl-football.png" alt="PEARL FOOTBALL" style="width:100%;border-radius:8px;display:block;background:#eceae4;min-height:80px" onerror="this.style.opacity=.25;this.alt='нет файла: 03-pearl-football.png'"><figcaption style="font-size:12px;color:#666;margin-top:4px">PEARL FOOTBALL — Ø145</figcaption></figure>
+      <figure style="margin:0"><img src="images/renders/04-stealth-football.png" alt="STEALTH FOOTBALL" style="width:100%;border-radius:8px;display:block;background:#eceae4;min-height:80px" onerror="this.style.opacity=.25;this.alt='нет файла: 04-stealth-football.png'"><figcaption style="font-size:12px;color:#666;margin-top:4px">STEALTH FOOTBALL — чёрный</figcaption></figure>
+      <figure style="margin:0"><img src="images/renders/05-basketball-sunset.png" alt="BASKETBALL SUNSET" style="width:100%;border-radius:8px;display:block;background:#eceae4;min-height:80px" onerror="this.style.opacity=.25;this.alt='нет файла: 05-basketball-sunset.png'"><figcaption style="font-size:12px;color:#666;margin-top:4px">BASKETBALL SUNSET</figcaption></figure>
+      <figure style="margin:0"><img src="images/renders/06-football-110-posadka.png" alt="Футбольный Ø110, посадка" style="width:100%;border-radius:8px;display:block;background:#eceae4"><figcaption style="font-size:12px;color:#666;margin-top:4px">Ø110 · посадка 187 см · упор сзади</figcaption></figure>
+    </div>
+
+    <p style="font-size:12px;color:#888;margin:8px 0 0">Пустые плитки = файла ещё нет. Скинь PNG в <code>images/renders/</code> с именами: <code>01-spine-110-rocker.png</code>, <code>03-pearl-football.png</code>, <code>04-stealth-football.png</code>, <code>05-basketball-sunset.png</code> — подхватятся сами.</p>
+
+    <p style="margin-bottom:0;font-size:13px;color:#555"><b>Рекомендация:</b> целиться в <b>А (Ø110)</b> — это единственный вариант, который чинит главную боль текущего кресла (низкая посадка, тяжело вставать). Плюс там уже заложена твоя «пипка»: задний упор + передний балласт 4–8 кг вместо тяжёлого низа.</p>
+  </div>
+
   <!-- РЕАЛЬНОЕ КРЕСЛО ПО СКАНУ -->
   <div class="card" style="border:2px solid #c0392b;background:#fdf3f1">
     <h2 style="color:#c0392b">⚠️ ВАЖНО для следующего агента — два варианта формы</h2>
@@ -268,6 +310,33 @@
       </div>
       <input id="zoom4" type="range" min="1800" max="8000" value="3200" oninput="setZoom4(this.value)" title="зум (крупнее ← → мельче)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%) rotate(90deg);transform-origin:right center;width:150px;accent-color:#7a5cc6">
     </div>
+  </div>
+
+  <!-- ===== 5-Е КРЕСЛО — НОВЫЙ ДИЗАЙН (низ-чаша готов + яйцо-верх) ===== -->
+  <div class="card" style="border:2px solid #b8860b">
+    <h2 style="color:#b8860b">🥚 5-е кресло — НОВЫЙ дизайн (3D): низ-чаша (готов) + яйцо-верх. Лепим вместе.</h2>
+    <p style="color:#555;font-size:14px;margin:4px 0 10px">Настоящая 3D-модель — крути мышью. <b>Низ (бирюза) = наша чаша Ø119 / H54 / дно40 (замер, уже вырезан)</b> = тело вращения. <b>Верх (золото) = новый асимметричный борт-яйцо</b>: среднее между UFO (обод) и Fonte (высокий задник-кокон) — спереди открыто и низко (сесть/встать легко), сзади борт-спинка выше (опора спины). Серый — человек 175 см для проверки посадки. Крути ползунки — вылепим форму, потом сделаю нарезку верха.</p>
+    <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
+      <div style="flex:1;min-width:340px;max-width:900px">
+        <canvas id="c5" style="width:100%;height:520px;background:#eceae4;border-radius:8px;border:1px solid #e6e1d5;display:block;touch-action:none"></canvas>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+          <button onclick="v5('iso')" style="padding:6px 12px;border:1px solid #d8cfb8;background:#f5efe0;border-radius:6px;cursor:pointer;font-size:13px">3D</button>
+          <button onclick="v5('side')" style="padding:6px 12px;border:1px solid #d8cfb8;background:#f5efe0;border-radius:6px;cursor:pointer;font-size:13px">Сбоку</button>
+          <button onclick="v5('front')" style="padding:6px 12px;border:1px solid #d8cfb8;background:#f5efe0;border-radius:6px;cursor:pointer;font-size:13px">Спереди</button>
+          <button onclick="v5('top')" style="padding:6px 12px;border:1px solid #d8cfb8;background:#f5efe0;border-radius:6px;cursor:pointer;font-size:13px">Сверху</button>
+          <button onclick="tilt5()" style="padding:6px 12px;border:1px solid #d8cfb8;background:#f5efe0;border-radius:6px;cursor:pointer;font-size:13px">На бок ⤡</button>
+          <button onclick="rock5()" style="padding:6px 12px;border:1px solid #d8cfb8;background:#f5efe0;border-radius:6px;cursor:pointer;font-size:13px">Качать ⟳</button>
+        </div>
+      </div>
+      <div style="min-width:230px;font-size:13px;color:#333;display:flex;flex-direction:column;gap:12px">
+        <label>Спинка сзади (высота): <b id="eL1">100</b> см<br><input id="eBack" type="range" min="75" max="125" value="100" style="width:100%;accent-color:#b8860b"></label>
+        <label>Передний край (высота): <b id="eL2">60</b> см<br><input id="eFront" type="range" min="54" max="85" value="60" style="width:100%;accent-color:#b8860b"></label>
+        <label>Ø посадки (открытость): <b id="eL3">96</b> см<br><input id="eSeat" type="range" min="78" max="112" value="96" style="width:100%;accent-color:#b8860b"></label>
+        <label>Наклон спинки назад: <b id="eL4">16</b>°<br><input id="eLean" type="range" min="0" max="35" value="16" style="width:100%;accent-color:#b8860b"></label>
+        <div id="eStats" class="stats" style="font-size:12px"></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:8px"><b>Бирюза</b> — низ-чаша (замер, фикс). <b>Золото</b> — новый борт-верх (стенка). <b>Красная линия</b> — край посадки. «На бок» = как реально стоит на балансире. Как договоримся — посчитаю кольца-нарезку верха под листы 120×60×5.08.</div>
   </div>
 
 </div>
@@ -1209,6 +1278,106 @@ function mkViewer({id,url}){
   upd(); addEventListener('resize',upd);
   (function loop(){requestAnimationFrame(loop);if(spin)ry+=0.004;upd();rnd.render(sc,cam);})();
 }
+</script>
+
+<!-- ===== 5-е кресло: НАСТОЯЩАЯ 3D-модель (низ-чаша замер + яйцо-верх Fonte-кокон) ===== -->
+<script type="module">
+import * as T5 from "three";
+// Низ-чаша (ЗАМЕР) — профиль масштабирован к Ø119 / H54 / дно40 (см). r,z в см от дна.
+const CUP_R=[16.5,24.3,24.5,26,28.8,31.5,33.4,35,36.4,37.5,38.8,40.1,40.7,41,41.5,41.8,42.3,43.8,45.3,46.1,49.1,51.6,52.6,51.6,49.1];
+const CUP_Z=[1.3,3.8,6.3,8.8,11.3,13.8,16.3,18.8,21.3,23.8,26.4,28.9,31.4,33.9,36.4,38.9,41.4,43.9,46.5,49,51.3,53.1,53.7,54,53.7];
+const SEAM_Z=54, R_SEAM=59.5;              // стык: обод чаши Ø119 → R59.5 на высоте 54 см
+
+const cv=document.getElementById('c5');
+const rnd=new T5.WebGLRenderer({canvas:cv,antialias:true});
+rnd.setPixelRatio(Math.min(devicePixelRatio,2));
+const sc=new T5.Scene(); sc.background=new T5.Color(0xeceae4);
+const cam=new T5.PerspectiveCamera(45,1,1,6000);
+sc.add(new T5.HemisphereLight(0xffffff,0x8892a0,0.95));
+const la=new T5.DirectionalLight(0xffffff,0.8); la.position.set(160,320,200); sc.add(la);
+const lb=new T5.DirectionalLight(0xffffff,0.3); lb.position.set(-150,120,-160); sc.add(lb);
+const grd=new T5.Mesh(new T5.CircleGeometry(300,64),new T5.MeshStandardMaterial({color:0xd8d2c4,roughness:1})); grd.rotation.x=-Math.PI/2; grd.position.y=-0.2; sc.add(grd);
+sc.add(new T5.GridHelper(600,30,0xaa9988,0xc6bfb2));
+const chair=new T5.Group(); sc.add(chair);
+
+// НИЗ-ЧАША (замер) — тело вращения, бирюза, фикс
+const kR=59.5/Math.max(...CUP_R);
+const cupPts=CUP_R.map((r,i)=>new T5.Vector2(Math.max(0.01,r*kR),CUP_Z[i]));
+const cupGeo=new T5.LatheGeometry(cupPts,96); cupGeo.computeVertexNormals();
+chair.add(new T5.Mesh(cupGeo,new T5.MeshStandardMaterial({color:0x2fa8a0,roughness:0.55,metalness:0.05,side:T5.DoubleSide,transparent:true,opacity:0.9})));
+
+const topGrp=new T5.Group(); chair.add(topGrp);
+const goldMat=new T5.MeshStandardMaterial({color:0xc79a2e,roughness:0.5,metalness:0.08,side:T5.DoubleSide});
+const humanMat=new T5.MeshStandardMaterial({color:0x8a8a8a,roughness:1,transparent:true,opacity:0.3});
+
+// состояние камеры/наклона
+let tiltOn=false, azim=0, anim=null;
+const TILT=0.92;                           // ~53° на балансир (как реально стоит)
+let rx=0.2, ry=0.7, dist=290, midY=78;
+const val=id=>+document.getElementById(id).value;
+
+// ВЕРХ-ЯЙЦО (Fonte-кокон): зад высокий обнимает, перёд низкий открыт. Асимметрия по углу.
+function build(){
+  while(topGrp.children.length)topGrp.remove(topGrp.children[0]);
+  const hBack=val('eBack'), hFront=val('eFront'), dSeat=val('eSeat'), lean=val('eLean');
+  document.getElementById('eL1').textContent=hBack;
+  document.getElementById('eL2').textContent=hFront;
+  document.getElementById('eL3').textContent=dSeat;
+  document.getElementById('eL4').textContent=lean;
+  const Na=100, Nt=24, Rrim=dSeat/2, eggB=6, tl=Math.tan(lean*Math.PI/180);
+  const pos=[], idx=[], row=Nt+1;
+  for(let ia=0;ia<=Na;ia++){
+    const th=ia/Na*Math.PI*2;               // 0 = перёд(+x), π = зад(−x)
+    const b=0.5-0.5*Math.cos(th);           // 0 спереди, 1 сзади
+    const rimH=hFront+(hBack-hFront)*b;      // высота борта по кругу
+    for(let it=0;it<=Nt;it++){
+      const t=it/Nt;
+      const h=SEAM_Z+t*(rimH-SEAM_Z);
+      const rr=R_SEAM+(Rrim-R_SEAM)*t+eggB*(0.4+0.6*b)*Math.sin(Math.PI*t); // яйцо-пузо, сильнее сзади
+      const shift=t*tl*(rimH-SEAM_Z)*b;      // наклон спинки назад
+      pos.push(rr*Math.cos(th)-shift, h, rr*Math.sin(th));
+    }
+  }
+  for(let ia=0;ia<Na;ia++)for(let it=0;it<Nt;it++){
+    const a=ia*row+it; idx.push(a,a+row,a+1, a+1,a+row,a+row+1);
+  }
+  const g=new T5.BufferGeometry();
+  g.setAttribute('position',new T5.Float32BufferAttribute(pos,3));
+  g.setIndex(idx); g.computeVertexNormals();
+  topGrp.add(new T5.Mesh(g,goldMat));
+
+  // край посадки (красная линия по ободу верха)
+  const rimPts=[];
+  for(let ia=0;ia<=Na;ia++){const th=ia/Na*Math.PI*2,b=0.5-0.5*Math.cos(th),rimH=hFront+(hBack-hFront)*b,shift=tl*(rimH-SEAM_Z)*b;rimPts.push(new T5.Vector3(Rrim*Math.cos(th)-shift,rimH,Rrim*Math.sin(th)));}
+  topGrp.add(new T5.Line(new T5.BufferGeometry().setFromPoints(rimPts),new T5.LineBasicMaterial({color:0xc0392b})));
+
+  // человек 175 см (силуэт, проверка посадки)
+  const seatH=32;
+  const hip=new T5.Vector3(6,seatH,0), shd=new T5.Vector3(-14-lean*0.4,seatH+46,0), hd=new T5.Vector3(-20-lean*0.5,seatH+60,0), kn=new T5.Vector3(44,seatH+3,0), ft=new T5.Vector3(54,2,0);
+  const limb=(a,b,r)=>{const d=new T5.Vector3().subVectors(b,a),len=d.length();const m=new T5.Mesh(new T5.CapsuleGeometry(r,len,6,12),humanMat);m.position.copy(a).addScaledVector(d,0.5);m.quaternion.setFromUnitVectors(new T5.Vector3(0,1,0),d.clone().normalize());topGrp.add(m);};
+  limb(hip,shd,13); limb(hip,kn,9); limb(kn,ft,8.5);
+  const head=new T5.Mesh(new T5.SphereGeometry(11,20,16),humanMat); head.position.copy(hd); topGrp.add(head);
+
+  const nUp=Math.max(1,Math.ceil((hBack-54)/5.08));
+  document.getElementById('eStats').innerHTML='Верх добавляет <b>'+(hBack-54)+' см</b> сзади → ~<b>'+nUp+'</b> колец-слоёв (5.08 см). Полная высота <b>'+hBack+' см</b>. Посадка ~<b>'+seatH+' см</b> от пола.';
+  pose();
+}
+
+chair.rotation.order='YXZ';
+function pose(){chair.position.y=0;chair.rotation.set(tiltOn?TILT:0,azim,0);chair.updateMatrixWorld(true);const bb=new T5.Box3().setFromObject(chair);chair.position.y=-bb.min.y;}
+function upd(){const cx=Math.sin(ry)*Math.cos(rx)*dist,cy=Math.sin(rx)*dist+midY,cz=Math.cos(ry)*Math.cos(rx)*dist;cam.position.set(cx,cy,cz);cam.lookAt(0,midY,0);}
+window.v5=v=>{if(v==='side'){rx=0.05;ry=0;}else if(v==='front'){rx=0.05;ry=Math.PI/2;}else if(v==='top'){rx=1.3;ry=0;}else{rx=0.2;ry=0.7;}upd();};
+window.tilt5=()=>{tiltOn=!tiltOn;pose();};
+window.rock5=()=>{if(anim){cancelAnimationFrame(anim);anim=null;return;}tiltOn=true;(function a(){azim+=0.01;pose();anim=requestAnimationFrame(a);})();};
+function rs(){const w=cv.clientWidth,h=cv.clientHeight||520;rnd.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();upd();}
+let dn=false,qx,qy;
+cv.addEventListener('pointerdown',e=>{dn=true;qx=e.clientX;qy=e.clientY;});
+addEventListener('pointerup',()=>dn=false);
+addEventListener('pointermove',e=>{if(!dn)return;ry+=(e.clientX-qx)*0.01;rx=Math.max(-1.3,Math.min(1.4,rx+(e.clientY-qy)*0.01));qx=e.clientX;qy=e.clientY;upd();});
+cv.addEventListener('wheel',e=>{e.preventDefault();dist*=(1+Math.sign(e.deltaY)*0.08);dist=Math.max(120,Math.min(700,dist));upd();},{passive:false});
+['eBack','eFront','eSeat','eLean'].forEach(id=>document.getElementById(id).addEventListener('input',build));
+build(); rs(); addEventListener('resize',rs); v5('iso');
+(function loop(){requestAnimationFrame(loop);rnd.render(sc,cam);})();
 </script>
 </body>
 </html>
